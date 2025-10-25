@@ -11,7 +11,7 @@ export default function Navbar() {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   return (
-    <div className="px-[120px] h-[52px] mt-4 mx-auto flex items-center">
+    <div className="px-[120px] h-[52px] z-[10000] mt-4 mx-auto flex items-center">
       <div className="text-2xl tracking-[-4px] font-light ">
         VI<span className="italic">CHAAR</span>
       </div>
@@ -31,7 +31,7 @@ export default function Navbar() {
                 whileHover={{ paddingInline: "24px" }}
                 whileTap={{ opacity: 0.9, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "backInOut" }}
-                className="absolute right-0 h-[calc(100%-16px)] z-20 top-1/2 -translate-y-1/2 text-white bg-gradient-to-b from-accent/80 shadow-[inset_0_2px_1px_rgba(255,255,255,0.5)] to-accent mx-2 flex items-center cursor-pointer justify-center aspect-square rounded-xl"
+                className="absolute right-0 h-[calc(100%-16px)] z-50 top-1/2 -translate-y-1/2 text-white bg-gradient-to-b from-accent/80 shadow-[inset_0_2px_1px_rgba(255,255,255,0.5)] to-accent mx-2 flex items-center cursor-pointer justify-center aspect-square rounded-xl"
               >
                 <ArrowBendDownLeftIcon />
               </motion.button>

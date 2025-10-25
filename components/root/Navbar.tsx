@@ -31,7 +31,7 @@ export default function Navbar() {
                 whileHover={{ paddingInline: "24px" }}
                 whileTap={{ opacity: 0.9, scale: 0.95 }}
                 transition={{ duration: 0.2, ease: "backInOut" }}
-                className="absolute right-0 h-[calc(100%-16px)] z-50 top-1/2 -translate-y-1/2 text-white bg-gradient-to-b from-accent/80 shadow-[inset_0_2px_1px_rgba(255,255,255,0.5)] to-accent mx-2 flex items-center cursor-pointer justify-center aspect-square rounded-xl"
+                className="absolute right-0 h-[calc(100%-16px)] z-50 top-1/2 -translate-y-1/2 text-white bg-gradient-to-b from-accent/80 shadow-[inset_0_2px_1px_rgba(255,255,255,0.5)] to-accent mx-2 flex items-center cursor-pointer justify-center aspect-square rounded-3xl"
               >
                 <ArrowBendDownLeftIcon />
               </motion.button>
@@ -59,7 +59,7 @@ export default function Navbar() {
           initial={{ height: "200%" }}
           animate={{ height: focused || query.length > 0 ? "100%" : "200%" }}
           transition={{ ease: "circInOut", duration: 0.3 }}
-          className="w-full  rounded-2xl absolute bottom-0 duration-300 left-0 group-focus-within:border-accent  transition-shadow group-focus-within:shadow-xl shadow-stone-300/40 border-2 border-border pointer-events-none overflow-hidden"
+          className="w-full  rounded-3xl absolute bottom-0 duration-300 left-0 group-focus-within:border-accent  transition-shadow group-focus-within:shadow-xl shadow-stone-300/40 border-2 border-border pointer-events-none overflow-hidden"
         ></motion.div>
       </motion.div>
     </div>

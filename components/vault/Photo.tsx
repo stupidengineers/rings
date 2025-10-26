@@ -26,9 +26,9 @@ export default function Photo() {
     <motion.div
       initial="rest"
       whileHover="hover"
-      className="w-full h-fit flex select-none relative rounded-3xl overflow-hidden"
+      className="w-full h-fit flex ring-0 hover:ring-4  transition-shadow ring-border/50 select-none relative rounded-3xl overflow-hidden cursor-pointer"
     >
-      <div className="absolute top-0 right-0 m-2 flex gap-2">
+      <div className="absolute top-0 right-0 m-2 flex gap-1">
         <Option>
           <ArrowUpRightIcon />
         </Option>

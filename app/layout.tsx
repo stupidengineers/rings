@@ -28,7 +28,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${primaryFont.variable} antialiased`}>
-        <Sides />
+        {/*<Sides />*/}
         <Navbar />
         {children}
       </body>

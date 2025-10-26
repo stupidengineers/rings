@@ -1,4 +1,5 @@
 import Photo from "@/components/vault/Photo";
+import PhotoAlbum from "@/components/vault/PhotoAlbum";
 import React from "react";
 
 export default function page() {
@@ -13,6 +14,7 @@ export default function page() {
       <div className="w-full mt-4 h-fit grid grid-cols-4 gap-2">
         <div className="w-full h-fit flex flex-col gap-2">
           <Photo />
+          <PhotoAlbum />
         </div>
       </div>
     </div>

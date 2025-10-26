@@ -1,4 +1,5 @@
 import List from "@/components/vault/List";
+import New from "@/components/vault/New";
 import Photo from "@/components/vault/Photo";
 import PhotoAlbum from "@/components/vault/PhotoAlbum";
 import Quote from "@/components/vault/Quote";
@@ -15,6 +16,7 @@ export default function page() {
       </div>
       <div className="w-full mt-4 h-fit grid grid-cols-4 gap-2">
         <div className="w-full h-fit flex flex-col gap-2">
+          <New />
           <Photo />
           <PhotoAlbum />
         </div>

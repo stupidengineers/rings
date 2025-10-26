@@ -13,7 +13,7 @@ export default function Navbar() {
   return (
     <div className="px-[120px] h-[52px] z-[10000] my-4 mx-auto flex items-center">
       <div className="text-2xl tracking-[-4px] font-light select-none ">
-        VI<span className="italic">CHAAR</span>
+        VI<span className="italic">IV</span>
       </div>
       {/*<motion.div
         transition={{ ease: "easeInOut", duration: 0.3 }}

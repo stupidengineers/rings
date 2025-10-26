@@ -1,67 +1,40 @@
 "use client";
-import {
-  ArrowBendDownLeftIcon,
-  ArrowBendLeftDown,
-  MagnifyingGlassIcon,
-} from "@phosphor-icons/react/dist/ssr";
-import React, { useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
+import { useState } from "react";
+
+const items = ["Vault", "Settings"];
 
 export default function Navbar() {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
+  const [active, setActive] = useState(0);
   return (
     <div className="lg:px-[120px] md:px-[80px] px-4 h-[52px] z-[10000] my-4 mx-auto flex items-center">
       <div className="text-2xl tracking-[-4px] font-light select-none ">
         VI<span className="italic">IV</span>
       </div>
-      {/*<motion.div
-        transition={{ ease: "easeInOut", duration: 0.3 }}
-        initial={{ width: "300px" }}
-        animate={{ width: query.length > 0 ? "400px" : "300px" }}
-        className="ml-auto h-full  relative group flex"
-      >
-        <AnimatePresence>
-          {query.length > 0 && (
-            <>
-              <motion.button
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                exit={{ scale: 0 }}
-                whileHover={{ paddingInline: "24px" }}
-                whileTap={{ opacity: 0.9, scale: 0.95 }}
-                transition={{ duration: 0.2, ease: "backInOut" }}
-                className="absolute right-0 h-[calc(100%-16px)] z-50 top-1/2 -translate-y-1/2 text-white bg-gradient-to-b from-accent/80 shadow-[inset_0_2px_1px_rgba(255,255,255,0.5)] to-accent mx-2 flex items-center cursor-pointer justify-center aspect-square rounded-3xl"
-              >
-                <ArrowBendDownLeftIcon />
-              </motion.button>
-            </>
-          )}
-        </AnimatePresence>
-        <div className="absolute left-4 top-1/2  -translate-y-1/2 text-stone-500 text-sm flex gap-2 items-center pointer-events-none">
-          <MagnifyingGlassIcon className="group-focus-within:text-stone-900 transition-colors duration-300" />
-          <span
-            className={`opacity-100 group-focus-within:opacity-0 ${query.length > 0 ? "!opacity-0" : "opacity-100"} transition-opacity duration-200`}
-          >
-            Search
-          </span>
-        </div>
-
-        <input
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
-          onChange={(e) => setQuery(e.target.value)}
-          value={query}
-          id="search-input"
-          className="w-full h-full px-4 pl-10 z-20"
-        />
-        <motion.div
-          initial={{ height: "200%" }}
-          animate={{ height: focused || query.length > 0 ? "100%" : "200%" }}
-          transition={{ ease: "circInOut", duration: 0.3 }}
-          className="w-full  rounded-3xl absolute bottom-0 duration-300 left-0 group-focus-within:border-accent  transition-shadow bg-white group-focus-within:shadow-xl shadow-stone-300/40 border-2 border-border pointer-events-none overflow-hidden"
-        ></motion.div>
-      </motion.div>*/}
+      <div className="ml-auto w-fit flex gap-2 items-center h-full">
+        {items.map((item, index) => {
+          return (
+            <motion.div
+              onClick={() => setActive(index)}
+              key={index + "navbar"}
+              className="relative px-4 hover:bg-stone-900/10 cursor-pointer py-1 rounded-3xl flex transition-all duration-300 "
+            >
+              {index === active && (
+                <>
+                  <motion.div
+                    style={{ borderRadius: 24 }}
+                    layoutId="navbar-pill"
+                    className="absolute inset-0 border-2 border-accent z-10"
+                  ></motion.div>
+                </>
+              )}
+              <div className="z-0">{item}</div>
+            </motion.div>
+          );
+        })}
+      </div>
     </div>
   );
 }

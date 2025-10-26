@@ -17,7 +17,7 @@ export default function PhotoAlbum() {
         }}
         className=" shadow-[0px_-2px_10px_rgba(0,0,0,0.3),inset_0_4px_16px_rgba(255,255,255,0.4)]  w-full absolute z-20 bg-accent bottom-0 rounded-t-lg"
       ></motion.div>
-      <div className="relative size-[calc(100%-32px)] ">
+      <div className="relative size-[85%] ">
         <motion.div
           variants={{
             rest: { rotate: "2deg" },
@@ -34,7 +34,7 @@ export default function PhotoAlbum() {
         </motion.div>
         <motion.div
           variants={{
-            rest: { rotate: "-4deg" },
+            rest: { rotate: "-3" },
             hover: { rotate: "0deg", bottom: "-60px" },
           }}
           className="size-full p-1 bg-white rounded-lg shadow-lg shadow-black/50  origin-[bottom_center] absolute"

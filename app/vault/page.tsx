@@ -3,18 +3,14 @@ import New from "@/components/vault/New";
 import Photo from "@/components/vault/Photo";
 import PhotoAlbum from "@/components/vault/PhotoAlbum";
 import Quote from "@/components/vault/Quote";
+import Search from "@/components/vault/Search";
 import React from "react";
 
 export default function page() {
   return (
-    <div className="w-full select-none h-fit flex flex-col px-[120px]">
-      <div className="w-full h-[64px] focus-within:border-accent transition-all duration-300 border-b-2 border-b-stone-300">
-        <input
-          placeholder="Photos of orange dogs"
-          className="w-full h-full text-2xl font-light"
-        />
-      </div>
-      <div className="w-full mt-4 h-fit grid grid-cols-4 gap-2">
+    <div className="w-full select-none h-fit flex flex-col px-4 md:px-[80px] lg:px-[120px]">
+      <Search />
+      <div className="w-full mt-4 h-fit grid grid-cols-1 sm:grid-cols-2  md:grid-cols-3 lg:grid-cols-4 gap-2">
         <div className="w-full h-fit flex flex-col gap-2">
           <New />
           <Photo />

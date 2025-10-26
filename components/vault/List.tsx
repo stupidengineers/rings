@@ -50,7 +50,7 @@ export default function List() {
   ]);
   return (
     <Card showOptions={false}>
-      <div className="w-full h-fit flex flex-col p-4  border-2 rounded-3xl border-border gap-1">
+      <div className="w-full h-fit flex flex-col p-4  border-2 rounded-3xl border-border gap-1 overflow-hidden">
         <div className="font-normal mb-2 text-xl ">My Tasks</div>
         {items.map((item, index) => (
           <Item

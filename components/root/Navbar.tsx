@@ -11,7 +11,7 @@ export default function Navbar() {
   const [query, setQuery] = useState("");
   const [focused, setFocused] = useState(false);
   return (
-    <div className="px-[120px] h-[52px] z-[10000] my-4 mx-auto flex items-center">
+    <div className="lg:px-[120px] md:px-[80px] px-4 h-[52px] z-[10000] my-4 mx-auto flex items-center">
       <div className="text-2xl tracking-[-4px] font-light select-none ">
         VI<span className="italic">IV</span>
       </div>

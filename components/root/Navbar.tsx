@@ -15,7 +15,7 @@ export default function Navbar() {
       <div className="text-2xl tracking-[-4px] font-light select-none ">
         VI<span className="italic">CHAAR</span>
       </div>
-      <motion.div
+      {/*<motion.div
         transition={{ ease: "easeInOut", duration: 0.3 }}
         initial={{ width: "300px" }}
         animate={{ width: query.length > 0 ? "400px" : "300px" }}
@@ -61,7 +61,7 @@ export default function Navbar() {
           transition={{ ease: "circInOut", duration: 0.3 }}
           className="w-full  rounded-3xl absolute bottom-0 duration-300 left-0 group-focus-within:border-accent  transition-shadow bg-white group-focus-within:shadow-xl shadow-stone-300/40 border-2 border-border pointer-events-none overflow-hidden"
         ></motion.div>
-      </motion.div>
+      </motion.div>*/}
     </div>
   );
 }

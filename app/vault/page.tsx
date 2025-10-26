@@ -6,7 +6,7 @@ export default function page() {
     <div className="w-full h-fit flex flex-col px-[120px]">
       <div className="w-full h-[64px] focus-within:border-accent transition-all duration-300 border-b-2 border-b-stone-300">
         <input
-          placeholder="Saw an alligator today"
+          placeholder="Photos of orange dogs"
           className="w-full h-full text-2xl font-light"
         />
       </div>

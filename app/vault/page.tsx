@@ -16,6 +16,10 @@ export default function page() {
           <Photo />
           <PhotoAlbum />
         </div>
+        <div className="w-full h-fit flex flex-col gap-2">
+          {/*<Photo />*/}
+          <PhotoAlbum />
+        </div>
       </div>
     </div>
   );

@@ -14,6 +14,7 @@ function Option({ children }: { children: ReactNode }) {
         rest: { scale: 0.8, opacity: 0 },
         hover: { scale: 1, opacity: 1 },
       }}
+      whileTap={{ scale: 0.9 }}
       className="size-10 transition-colors rounded-full flex items-center justify-center  backdrop-blur-sm border-border/20 hover:border-border/30 hover:bg-stone-800/50 cursor-pointer border bg-stone-900/50 text-white"
     >
       {children}
@@ -29,9 +30,6 @@ export default function Photo() {
       className="w-full h-fit flex ring-0 hover:ring-4  transition-shadow ring-border/50 select-none relative rounded-3xl overflow-hidden cursor-pointer"
     >
       <div className="absolute top-0 right-0 m-2 flex gap-1">
-        <Option>
-          <ArrowUpRightIcon />
-        </Option>
         <Option>
           <PencilSimpleIcon />
         </Option>

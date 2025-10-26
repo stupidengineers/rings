@@ -11,6 +11,13 @@
     --color-border: #b7b2aa;
     --color-accent: #da2e03;
 }
+img {
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+}
 
 button:focus-visible,
 a:focus-visible,

@@ -1,15 +1,26 @@
 "use client";
 import { motion } from "motion/react";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./Card";
 
-export default function PhotoAlbum() {
+interface PhotoAlbumProps {
+  title: string;
+  images: string[];
+}
+
+export default function PhotoAlbum({ title, images }: PhotoAlbumProps) {
   const [randomRots, setRandomRots] = useState([0, 0, 0]);
 
   useEffect(() => {
     const newRots = Array.from({ length: 3 }, () => Math.random() * 8 - 4);
     setRandomRots(newRots);
   }, []);
+
+  // Ensure we have at least 3 images, repeat if necessary
+  const displayImages = [...images];
+  while (displayImages.length < 3) {
+    displayImages.push(...images);
+  }
 
   return (
     <Card>
@@ -22,7 +33,7 @@ export default function PhotoAlbum() {
           className=" shadow-[0px_-2px_10px_rgba(0,0,0,0.3),inset_0_4px_16px_rgba(255,255,255,0.4)]  w-full absolute z-20 bg-accent bottom-0 rounded-t-lg text-white"
         >
           <motion.div className="size-full font-light px-5 py-4 text-base flex flex-col justify-end text-white/80">
-            Silly dogs
+            {title}
           </motion.div>
         </motion.div>
         <div className="relative size-[85%] ">
@@ -36,7 +47,8 @@ export default function PhotoAlbum() {
             <div className="size-full relative overflow-hidden  rounded-sm shadow-sm shadow-black/20">
               <img
                 className="absolute size-full object-cover"
-                src="https://i.pinimg.com/1200x/87/19/1a/87191a4fa5d8c866f25378e3c1269083.jpg"
+                src={displayImages[0]}
+                alt={`${title} photo 1`}
               />
             </div>
           </motion.div>
@@ -50,7 +62,8 @@ export default function PhotoAlbum() {
             <div className="size-full relative overflow-hidden  rounded-sm shadow-sm shadow-black/20">
               <img
                 className="absolute size-full object-cover"
-                src="https://i.pinimg.com/736x/14/79/c6/1479c6c3975bda836c19d2f11177ba62.jpg"
+                src={displayImages[1]}
+                alt={`${title} photo 2`}
               />
             </div>
           </motion.div>
@@ -64,7 +77,8 @@ export default function PhotoAlbum() {
             <div className="size-full relative overflow-hidden  rounded-sm shadow-sm shadow-black/20">
               <img
                 className="absolute size-full object-cover"
-                src="https://i.pinimg.com/736x/e0/f6/e9/e0f6e9d498b416834624557dab0f3051.jpg"
+                src={displayImages[2]}
+                alt={`${title} photo 3`}
               />
             </div>
           </motion.div>

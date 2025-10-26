@@ -4,6 +4,16 @@ import Card from "./Card";
 import { AnimatePresence, motion } from "motion/react";
 import { PlusCircleIcon } from "@phosphor-icons/react/dist/ssr";
 
+interface ListItem {
+  title: string;
+  done: boolean;
+}
+
+interface ListProps {
+  title: string;
+  initialItems: ListItem[];
+}
+
 function Item({
   content,
   done,
@@ -41,17 +51,13 @@ function Item({
   );
 }
 
-export default function List() {
-  const [items, setItems] = React.useState([
-    { title: "Do this do that", done: false },
-    { title: "And this and that", done: false },
-    { title: "Probably this too", done: false },
-    { title: "This is done", done: true },
-  ]);
+export default function List({ title, initialItems }: ListProps) {
+  const [items, setItems] = React.useState<ListItem[]>(initialItems);
+
   return (
     <Card showOptions={false}>
       <div className="w-full h-fit flex flex-col p-4  border-2 rounded-3xl border-border gap-1 overflow-hidden">
-        <div className="font-normal mb-2 text-xl ">My Tasks</div>
+        <div className="font-normal mb-2 text-xl ">{title}</div>
         {items.map((item, index) => (
           <Item
             onToggle={() =>

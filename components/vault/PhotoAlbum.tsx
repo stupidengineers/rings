@@ -1,9 +1,16 @@
 "use client";
 import { motion } from "motion/react";
-import React from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Card from "./Card";
 
 export default function PhotoAlbum() {
+  const [randomRots, setRandomRots] = useState([0, 0, 0]);
+
+  useEffect(() => {
+    const newRots = Array.from({ length: 3 }, () => Math.random() * 8 - 4);
+    setRandomRots(newRots);
+  }, []);
+
   return (
     <Card>
       <motion.div className="rounded-3xl relative w-full aspect-square bg-accent shadow-[inset_0_4px_8px_rgba(255,255,255,0.8)] flex items-center overflow-hidden justify-center">
@@ -21,8 +28,8 @@ export default function PhotoAlbum() {
         <div className="relative size-[85%] ">
           <motion.div
             variants={{
-              rest: { rotate: "2deg" },
-              hover: { rotate: "0deg" },
+              rest: { rotate: randomRots[0] },
+              hover: { rotate: 0 },
             }}
             className="size-full p-1 absolute bg-white rounded-lg shadow-lg shadow-black/50 origin-[bottom_center]"
           >
@@ -35,8 +42,8 @@ export default function PhotoAlbum() {
           </motion.div>
           <motion.div
             variants={{
-              rest: { rotate: "-3" },
-              hover: { rotate: "0deg", bottom: "-60px" },
+              rest: { rotate: randomRots[1] },
+              hover: { rotate: 0, bottom: "-60px" },
             }}
             className="size-full p-1 bg-white rounded-lg shadow-lg shadow-black/50  origin-[bottom_center] absolute"
           >
@@ -49,8 +56,8 @@ export default function PhotoAlbum() {
           </motion.div>
           <motion.div
             variants={{
-              rest: { rotate: "-2deg" },
-              hover: { rotate: "0deg", bottom: "-120px" },
+              rest: { rotate: randomRots[2] },
+              hover: { rotate: 0, bottom: "-120px" },
             }}
             className="size-full p-1 bg-white rounded-lg shadow-lg shadow-black/50  origin-[bottom_center] absolute"
           >

@@ -35,6 +35,7 @@ export default function Card({
     <motion.div
       initial="rest"
       whileHover="hover"
+      animate="rest"
       className=" w-full h-fit  rounded-3xl  ring-0 hover:ring-4  transition-shadow ring-border/50 text-justify text-3xl font-light relative"
     >
       {showOptions && (

@@ -1,3 +1,4 @@
+import List from "@/components/vault/List";
 import Photo from "@/components/vault/Photo";
 import PhotoAlbum from "@/components/vault/PhotoAlbum";
 import Quote from "@/components/vault/Quote";
@@ -5,7 +6,7 @@ import React from "react";
 
 export default function page() {
   return (
-    <div className="w-full h-fit flex flex-col px-[120px]">
+    <div className="w-full select-none h-fit flex flex-col px-[120px]">
       <div className="w-full h-[64px] focus-within:border-accent transition-all duration-300 border-b-2 border-b-stone-300">
         <input
           placeholder="Photos of orange dogs"
@@ -21,6 +22,11 @@ export default function page() {
           {/*<Photo />*/}
           <PhotoAlbum />
           <Quote />
+        </div>
+        <div className="w-full h-fit flex flex-col gap-2">
+          {/*<Photo />*/}
+          <List />
+          <PhotoAlbum />
         </div>
       </div>
     </div>

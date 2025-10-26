@@ -6,18 +6,18 @@ import Card from "./Card";
 export default function PhotoAlbum() {
   return (
     <Card>
-      <motion.div
-        initial="rest"
-        whileHover="hover"
-        className="rounded-3xl relative w-full aspect-square bg-accent shadow-[inset_0_4px_8px_rgba(255,255,255,0.8)] flex items-center overflow-hidden justify-center"
-      >
+      <motion.div className="rounded-3xl relative w-full aspect-square bg-accent shadow-[inset_0_4px_8px_rgba(255,255,255,0.8)] flex items-center overflow-hidden justify-center">
         <motion.div
           variants={{
             rest: { height: "40%" },
             hover: { height: "20%" },
           }}
-          className=" shadow-[0px_-2px_10px_rgba(0,0,0,0.3),inset_0_4px_16px_rgba(255,255,255,0.4)]  w-full absolute z-20 bg-accent bottom-0 rounded-t-lg"
-        ></motion.div>
+          className=" shadow-[0px_-2px_10px_rgba(0,0,0,0.3),inset_0_4px_16px_rgba(255,255,255,0.4)]  w-full absolute z-20 bg-accent bottom-0 rounded-t-lg text-white"
+        >
+          <motion.div className="size-full font-light px-5 py-4 text-base flex flex-col justify-end text-white/80">
+            Silly dogs
+          </motion.div>
+        </motion.div>
         <div className="relative size-[85%] ">
           <motion.div
             variants={{

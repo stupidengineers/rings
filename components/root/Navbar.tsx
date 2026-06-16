@@ -11,7 +11,7 @@ export default function Navbar() {
   return (
     <div className="lg:px-[120px] md:px-[80px] px-4 h-[52px] z-[10000] my-4 mx-auto flex items-center">
       <div className="text-2xl tracking-[-4px] font-light select-none ">
-        VI<span className="italic">IV</span>
+        RI<span className="italic">NGS</span>
       </div>
       <div className="ml-auto w-fit flex gap-2 items-center h-full">
         {items.map((item, index) => {

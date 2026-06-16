@@ -1,4 +1,4 @@
-# Vichaar
+# RINGS
 
 A personal vault for thoughts, memories, and inspiration. Save photos, quotes, checklists, and photo albums in a beautiful Pinterest-style masonry grid.
 

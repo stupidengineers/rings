@@ -16,8 +16,8 @@ const primaryFont = Roboto_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "Vichaar",
-  description: "A platform for sharing ideas and opinions",
+  title: "RINGS",
+  description: "A personal vault for thoughts, memories, and inspiration",
 };
 
 export default function RootLayout({

@@ -155,6 +155,7 @@ async function getMlxModel(): Promise<string> {
 
 async function classifyViaMlx(text: string, imageCount: number): Promise<ClassifyResult> {
   const model = await getMlxModel();
+  console.log("[MLX classify] model:", model, "url:", `${MLX_URL}/v1/chat/completions`);
   const res = await fetch(`${MLX_URL}/v1/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -165,7 +166,11 @@ async function classifyViaMlx(text: string, imageCount: number): Promise<Classif
       max_tokens: 1024,
     }),
   });
-  if (!res.ok) throw new Error(`MLX error: ${res.status}`);
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    console.error("[MLX classify] error:", res.status, body);
+    throw new Error(`MLX error: ${res.status}`);
+  }
   const data = await res.json();
   const content = data.choices?.[0]?.message?.content?.trim() ?? "";
   return parseClassifyResponse(content, text, imageCount);

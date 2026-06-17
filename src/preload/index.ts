@@ -20,6 +20,22 @@ export interface Note {
   tasks: { content: string; done: boolean }[];
 }
 
+export interface ChatSession {
+  id: string;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ChatMessage {
+  id: number;
+  session_id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  sources: string | null;
+  created_at: string;
+}
+
 contextBridge.exposeInMainWorld("electron", {
   window: {
     minimize: () => ipcRenderer.invoke("window:minimize"),
@@ -46,5 +62,32 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.invoke("notes:update", id, data),
     toggleTask: (noteId: number, taskIndex: number): Promise<void> =>
       ipcRenderer.invoke("notes:toggleTask", noteId, taskIndex),
+  },
+  preferences: {
+    get: (key: string): Promise<string | null> =>
+      ipcRenderer.invoke("prefs:get", key),
+    set: (key: string, value: string): Promise<void> =>
+      ipcRenderer.invoke("prefs:set", key, value),
+    getAll: (): Promise<Record<string, string>> =>
+      ipcRenderer.invoke("prefs:getAll"),
+  },
+  chat: {
+    createSession: (title?: string): Promise<ChatSession> =>
+      ipcRenderer.invoke("chat:createSession", title),
+    getSessions: (): Promise<ChatSession[]> =>
+      ipcRenderer.invoke("chat:sessions"),
+    getSession: (id: string): Promise<ChatSession | null> =>
+      ipcRenderer.invoke("chat:session", id),
+    deleteSession: (id: string): Promise<void> =>
+      ipcRenderer.invoke("chat:deleteSession", id),
+    addMessage: (
+      sessionId: string,
+      role: "user" | "assistant" | "system",
+      content: string,
+      sources?: string,
+    ): Promise<ChatMessage> =>
+      ipcRenderer.invoke("chat:addMessage", sessionId, role, content, sources),
+    getMessages: (sessionId: string): Promise<ChatMessage[]> =>
+      ipcRenderer.invoke("chat:messages", sessionId),
   },
 });

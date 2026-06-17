@@ -72,13 +72,13 @@ export default function Vault() {
 
   const displayNotes = searchResults ?? notes;
 
-  // Distribute notes into columns by ID for stable assignment on delete
-  // Only render non-empty columns so the grid collapses naturally
-  const colMap: Note[][] = [[], [], [], []];
+  // Fixed column slots — grid breakpoints control how many are visible
+  // sm:2, md:3, lg:4, 2xl:5. Notes stay in the same column on delete.
+  const NUM_COLS = 5;
+  const columns: Note[][] = Array.from({ length: NUM_COLS }, () => []);
   displayNotes.forEach((note) => {
-    colMap[note.id % 4].push(note);
+    columns[note.id % NUM_COLS].push(note);
   });
-  const columns = colMap.filter((c) => c.length > 0);
 
   return (
     <div className="w-full select-none h-fit flex flex-col px-4">
@@ -96,12 +96,9 @@ export default function Vault() {
           </p>
         </div>
       ) : (
-        <div className="w-full mt-4 h-fit flex gap-2">
-          {columns.length === 0 && !isSearching && (
-            <div className="flex-1 min-w-0"><New /></div>
-          )}
+        <div className="w-full mt-4 h-fit grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2">
           {columns.map((col, colIdx) => (
-            <div key={colIdx} className="flex-1 min-w-0 h-fit flex flex-col gap-2">
+            <div key={colIdx} className="w-full h-fit flex flex-col gap-2">
               {colIdx === 0 && !isSearching && <New />}
               <AnimatePresence mode="popLayout">
                 {col.map((note) => {

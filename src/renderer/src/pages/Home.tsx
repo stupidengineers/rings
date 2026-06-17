@@ -44,12 +44,10 @@ export default function Home() {
         noteType = result.type;
         title = result.title;
         author = result.author;
-        // Only use LLM content if it looks like actual user content, not echoed instructions
         const PROMPT_PHRASES = ["cleaned up", "remove instructions", "main body", "null if none", "otherwise null"];
         const isGarbage = result.content &&
           PROMPT_PHRASES.some((p) => result.content!.toLowerCase().includes(p));
         if (!isGarbage) {
-          // use LLM content (even if empty — empty is valid for photo/album with images)
           cleanContent = result.content ?? (images.length > 0 ? "" : text);
         }
       } else {
@@ -67,7 +65,6 @@ export default function Home() {
               .filter(Boolean)
           : undefined;
 
-      // Save images to disk first (blob URLs die on restart)
       const savedImages: string[] = [];
       for (const blobUrl of images) {
         const res = await fetch(blobUrl);
@@ -107,16 +104,11 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-[calc(100vh-52px)] px-6 pt-24">
+    <div className="flex flex-col items-center min-h-[calc(100vh-52px)] px-6 pb-24 justify-center">
       <div className="w-full max-w-xl">
-        <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2">
-          What do you want to
-          <br />
-          <span className="italic">remember?</span>
+        <h1 className="text-4xl text-center mb-12 md:text-5xl font-light tracking-tight">
+          Note something down
         </h1>
-        <p className="text-foreground/40 font-light mb-10">
-          Paste images, type a quote, jot down tasks. Markdown supported.
-        </p>
 
         <div className="relative flex flex-col border-b-2 border-b-border focus-within:border-accent transition-colors">
           <AnimatePresence>
@@ -154,17 +146,17 @@ export default function Home() {
             onChange={(e) => setText(e.target.value)}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
-            placeholder="Note something down..."
+            placeholder="I love sunsets"
             rows={1}
             className="w-full text-2xl font-light bg-transparent resize-none placeholder:text-foreground/30 focus:outline-none pb-3 pr-12"
           />
 
-          <div className="absolute bottom-2 right-0">
+          <div className="absolute bottom-2 right-0 z-10">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleSend}
               disabled={loading}
-              className="size-9 rounded-full bg-accent text-white flex items-center justify-center cursor-pointer shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] hover:opacity-90 transition-opacity disabled:opacity-60"
+              className="size-9 rounded-full bg-accent text-white! flex items-center justify-center cursor-pointer shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] hover:opacity-90 transition-opacity disabled:opacity-60"
             >
               {loading ? (
                 <motion.div

@@ -130,14 +130,13 @@ export default function Vault() {
         </div>
       ) : (
         <LayoutGroup>
-        <motion.div layout className="w-full mt-4 h-fit flex gap-2 items-start">
+        <motion.div layout className="w-full mt-4 h-fit grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2">
           {columns.map((col, colIdx) => (
             <motion.div
               key={`col-${col.id}`}
               layout
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
-              className="h-fit flex flex-col gap-2"
-              style={{ width: 280 }}
+              className="w-full h-fit flex flex-col gap-2"
             >
               {colIdx === 0 && !isSearching && <New />}
               <AnimatePresence mode="popLayout">

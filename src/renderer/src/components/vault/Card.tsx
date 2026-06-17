@@ -1,11 +1,12 @@
 import React, { ReactNode } from "react";
 import { motion } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { PencilEdit01Icon, Delete01Icon } from "@hugeicons/core-free-icons";
+import { Pen01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 
-function Option({ children }: { children: ReactNode }) {
+function Option({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
   return (
     <motion.div
+      onClick={onClick}
       whileTap={{ scale: 0.9 }}
       variants={{
         rest: { opacity: 0 },
@@ -49,20 +50,14 @@ export default function Card({
       className="w-full h-fit rounded-3xl shadow-none hover:shadow-[0_4px_12px_rgba(28,25,23,0.08)] transition-shadow duration-200 text-justify text-3xl font-light relative"
     >
       {showOptions && (
-        <>
-          <div className="absolute top-0 text-lg right-0 m-2 flex gap-1">
-            <Option>
-              <button onClick={onEdit} className="cursor-pointer">
-                <HugeiconsIcon icon={PencilEdit01Icon} />
-              </button>
-            </Option>
-            <Option>
-              <button onClick={onDelete} className="cursor-pointer">
-                <HugeiconsIcon icon={Delete01Icon} />
-              </button>
-            </Option>
-          </div>
-        </>
+        <div className="absolute top-0 text-lg right-0 m-2 flex gap-1">
+          <Option onClick={onEdit}>
+            <HugeiconsIcon icon={Pen01Icon} size={17} />
+          </Option>
+          <Option onClick={onDelete}>
+            <HugeiconsIcon icon={Delete02Icon} size={17} />
+          </Option>
+        </div>
       )}
       {children}
     </motion.div>

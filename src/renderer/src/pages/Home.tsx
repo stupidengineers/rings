@@ -57,13 +57,15 @@ export default function Home() {
         else if (text.includes("\n- ") || text.includes("\n* ")) noteType = "tasks";
       }
 
-      const taskLines =
-        noteType === "tasks"
-          ? cleanContent
-              .split("\n")
-              .map((l) => l.replace(/^[-*\d.)\]]\s*/, "").trim())
-              .filter(Boolean)
-          : undefined;
+      let taskLines: string[] | undefined;
+      if (noteType === "tasks") {
+        let lines = cleanContent.split("\n").map((l) => l.replace(/^[-*\d.)\]]\s*/, "").trim()).filter(Boolean);
+        if (lines.length === 1) {
+          const bySep = lines[0].split(/,\s*(?:and\s+)?|(?:^|\s+)and\s+/).map((s) => s.trim()).filter(Boolean);
+          if (bySep.length >= 2) lines = bySep;
+        }
+        taskLines = lines;
+      }
 
       const savedImages: string[] = [];
       for (const blobUrl of images) {

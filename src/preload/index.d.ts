@@ -36,6 +36,10 @@ interface ElectronAPI {
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
   };
+  embeddings: {
+    embedAll: () => Promise<{ total: number; embedded: number; failed: number }>;
+    status: () => Promise<{ total: number; embedded: number }>;
+  };
 }
 
 interface Window {

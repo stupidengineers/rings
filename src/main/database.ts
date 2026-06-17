@@ -44,6 +44,11 @@ export function initDatabase(): void {
       done INTEGER DEFAULT 0,
       sort_order INTEGER DEFAULT 0
     );
+
+    CREATE TABLE IF NOT EXISTS note_embeddings (
+      note_id INTEGER PRIMARY KEY REFERENCES notes(id) ON DELETE CASCADE,
+      embedding BLOB NOT NULL
+    );
   `);
 }
 
@@ -206,4 +211,46 @@ export function toggleTask(noteId: number, taskIndex: number): void {
       task.id,
     );
   }
+}
+
+// --- Embedding helpers ---
+
+export function saveEmbedding(noteId: number, embedding: Buffer): void {
+  db.prepare(
+    "INSERT OR REPLACE INTO note_embeddings (note_id, embedding) VALUES (?, ?)",
+  ).run(noteId, embedding);
+}
+
+export function getEmbedding(noteId: number): Buffer | null {
+  const row = db
+    .prepare("SELECT embedding FROM note_embeddings WHERE note_id = ?")
+    .get(noteId) as { embedding: Buffer } | undefined;
+  return row?.embedding ?? null;
+}
+
+export function deleteEmbedding(noteId: number): void {
+  db.prepare("DELETE FROM note_embeddings WHERE note_id = ?").run(noteId);
+}
+
+export function getNotesWithoutEmbeddings(): number[] {
+  const rows = db
+    .prepare(
+      "SELECT n.id FROM notes n LEFT JOIN note_embeddings e ON n.id = e.note_id WHERE e.note_id IS NULL",
+    )
+    .all() as { id: number }[];
+  return rows.map((r) => r.id);
+}
+
+export function getEmbeddingCount(): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM note_embeddings")
+    .get() as { count: number };
+  return row.count;
+}
+
+export function getNoteCount(): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM notes")
+    .get() as { count: number };
+  return row.count;
 }

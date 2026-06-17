@@ -10,7 +10,10 @@ import {
   deleteNote,
   updateNote,
   toggleTask,
+  getEmbeddingCount,
+  getNoteCount,
 } from "./database";
+import { queueEmbedding, removeEmbedding, embedAllNotes } from "./embeddings";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -77,13 +80,31 @@ ipcMain.handle("images:save", async (_, buffer: ArrayBuffer, ext: string) => {
 });
 
 // Notes CRUD
-ipcMain.handle("notes:create", (_, data) => createNote(data));
+ipcMain.handle("notes:create", async (_, data) => {
+  const note = createNote(data);
+  queueEmbedding(note.id);
+  return note;
+});
 ipcMain.handle("notes:getAll", () => getAllNotes());
-ipcMain.handle("notes:delete", (_, id: number) => deleteNote(id));
-ipcMain.handle("notes:update", (_, id: number, data) => updateNote(id, data));
+ipcMain.handle("notes:delete", async (_, id: number) => {
+  deleteNote(id);
+  removeEmbedding(id);
+});
+ipcMain.handle("notes:update", async (_, id: number, data) => {
+  const note = updateNote(id, data);
+  if (note) queueEmbedding(note.id);
+  return note;
+});
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
 );
+
+// Embeddings
+ipcMain.handle("embeddings:embedAll", () => embedAllNotes());
+ipcMain.handle("embeddings:status", () => ({
+  total: getNoteCount(),
+  embedded: getEmbeddingCount(),
+}));
 
 app.whenReady().then(() => {
   imagesDir = join(app.getPath("userData"), "images");

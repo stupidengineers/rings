@@ -114,4 +114,10 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.on("ollama:chat-chunk", (_, chunk) => callback(chunk));
     },
   },
+  embeddings: {
+    embedAll: (): Promise<{ total: number; embedded: number; failed: number }> =>
+      ipcRenderer.invoke("embeddings:embedAll"),
+    status: (): Promise<{ total: number; embedded: number }> =>
+      ipcRenderer.invoke("embeddings:status"),
+  },
 });

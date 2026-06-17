@@ -89,6 +89,10 @@ interface ElectronAPI {
     ) => Promise<string>;
     onChatChunk: (callback: (chunk: string) => void) => void;
   };
+  embeddings: {
+    embedAll: () => Promise<{ total: number; embedded: number; failed: number }>;
+    status: () => Promise<{ total: number; embedded: number }>
+  };
 }
 
 interface Window {

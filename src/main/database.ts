@@ -421,3 +421,45 @@ export function getChatSummary(sessionId: string): ChatSummary | null {
     .get(sessionId) as ChatSummary | undefined;
   return row ?? null;
 }
+
+// --- Embedding helpers ---
+
+export function saveEmbedding(noteId: number, embedding: Buffer): void {
+  db.prepare(
+    "INSERT OR REPLACE INTO note_embeddings (note_id, embedding) VALUES (?, ?)",
+  ).run(noteId, embedding);
+}
+
+export function getEmbedding(noteId: number): Buffer | null {
+  const row = db
+    .prepare("SELECT embedding FROM note_embeddings WHERE note_id = ?")
+    .get(noteId) as { embedding: Buffer } | undefined;
+  return row?.embedding ?? null;
+}
+
+export function deleteEmbedding(noteId: number): void {
+  db.prepare("DELETE FROM note_embeddings WHERE note_id = ?").run(noteId);
+}
+
+export function getNotesWithoutEmbeddings(): number[] {
+  const rows = db
+    .prepare(
+      "SELECT n.id FROM notes n LEFT JOIN note_embeddings e ON n.id = e.note_id WHERE e.note_id IS NULL",
+    )
+    .all() as { id: number }[];
+  return rows.map((r) => r.id);
+}
+
+export function getEmbeddingCount(): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM note_embeddings")
+    .get() as { count: number };
+  return row.count;
+}
+
+export function getNoteCount(): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM notes")
+    .get() as { count: number };
+  return row.count;
+}

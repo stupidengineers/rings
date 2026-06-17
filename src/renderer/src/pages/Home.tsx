@@ -1,13 +1,14 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpBigIcon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { ArrowUpBigIcon, Cancel01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { classifyNote, isOllamaRunning } from "../lib/ollama";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
@@ -85,13 +86,16 @@ export default function Home() {
         images: savedImages.length > 0 ? savedImages : undefined,
         tasks: taskLines,
       });
+
+      setText("");
+      setImages([]);
+      setSent(true);
+      setTimeout(() => setSent(false), 600);
     } catch (err) {
       console.error("Failed to save note:", err);
     }
 
     setLoading(false);
-    setText("");
-    setImages([]);
     textareaRef.current?.focus();
   };
 
@@ -168,6 +172,8 @@ export default function Home() {
                   transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
                   className="size-4 border-2 border-white/30 border-t-white rounded-full"
                 />
+              ) : sent ? (
+                <HugeiconsIcon icon={Tick01Icon} size={16} />
               ) : (
                 <HugeiconsIcon icon={ArrowUpBigIcon} size={16} />
               )}

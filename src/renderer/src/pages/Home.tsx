@@ -114,11 +114,11 @@ export default function Home() {
           <br />
           <span className="italic">remember?</span>
         </h1>
-        <p className="text-stone-400 font-light mb-10">
+        <p className="text-foreground/40 font-light mb-10">
           Paste images, type a quote, jot down tasks. Markdown supported.
         </p>
 
-        <div className="relative flex flex-col border-b-2 border-b-stone-200 focus-within:border-accent transition-colors">
+        <div className="relative flex flex-col border-b-2 border-b-border focus-within:border-accent transition-colors">
           <AnimatePresence>
             {images.length > 0 && (
               <motion.div
@@ -156,7 +156,7 @@ export default function Home() {
             onKeyDown={handleKeyDown}
             placeholder="Note something down..."
             rows={1}
-            className="w-full text-2xl font-light bg-transparent resize-none placeholder:text-stone-300 focus:outline-none pb-3 pr-12"
+            className="w-full text-2xl font-light bg-transparent resize-none placeholder:text-foreground/30 focus:outline-none pb-3 pr-12"
           />
 
           <div className="absolute bottom-2 right-0">

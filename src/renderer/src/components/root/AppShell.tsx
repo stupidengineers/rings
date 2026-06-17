@@ -38,7 +38,7 @@ function NavItems() {
         <Link
           key={index + "navbar"}
           to={item.href}
-          className="relative px-4 hover:bg-stone-900/10 cursor-pointer py-1 rounded-3xl flex transition-all duration-300 text-foreground no-underline"
+          className="relative px-4 hover:bg-foreground/10 cursor-pointer py-1 rounded-3xl flex transition-all duration-300 text-foreground no-underline"
         >
           {index + 1 === (isHome ? -1 : active >= 0 ? active : -1) && (
             <motion.div

@@ -51,14 +51,14 @@ export default function EditModal({ note, onClose, onSave }: Props) {
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
           transition={{ duration: 0.2 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-lg mx-4 bg-white border-2 border-border rounded-3xl shadow-xl overflow-hidden"
+          className="w-full max-w-lg mx-4 bg-surface border-2 border-border rounded-3xl shadow-xl overflow-hidden"
         >
           <div className="p-6 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-normal">Edit {note.type}</h2>
               <button
                 onClick={onClose}
-                className="size-8 rounded-full hover:bg-stone-100 flex items-center justify-center cursor-pointer transition-colors"
+                className="size-8 rounded-full hover:bg-surface-hover flex items-center justify-center cursor-pointer transition-colors"
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={16} />
               </button>
@@ -69,7 +69,7 @@ export default function EditModal({ note, onClose, onSave }: Props) {
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Title"
-                className="w-full text-xl font-light bg-transparent border-b-2 border-stone-200 focus:border-accent transition-colors pb-2 placeholder:text-stone-300"
+                className="w-full text-xl font-light bg-transparent border-b-2 border-border focus:border-accent transition-colors pb-2 placeholder:text-foreground/30"
               />
             )}
 
@@ -78,7 +78,7 @@ export default function EditModal({ note, onClose, onSave }: Props) {
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 placeholder="Author"
-                className="w-full text-base font-light bg-transparent border-b-2 border-stone-200 focus:border-accent transition-colors pb-2 placeholder:text-stone-300"
+                className="w-full text-base font-light bg-transparent border-b-2 border-border focus:border-accent transition-colors pb-2 placeholder:text-foreground/30"
               />
             )}
 
@@ -87,13 +87,13 @@ export default function EditModal({ note, onClose, onSave }: Props) {
               onChange={(e) => setContent(e.target.value)}
               placeholder="Content..."
               rows={note.type === "quote" ? 4 : note.type === "tasks" ? 6 : 3}
-              className="w-full text-lg font-light bg-transparent border-2 border-stone-200 focus:border-accent rounded-2xl p-4 resize-none placeholder:text-stone-300 transition-colors"
+              className="w-full text-lg font-light bg-transparent border-2 border-border focus:border-accent rounded-2xl p-4 resize-none placeholder:text-foreground/30 transition-colors"
             />
 
             <div className="flex gap-2 justify-end">
               <button
                 onClick={onClose}
-                className="px-5 py-2 rounded-3xl text-sm text-stone-500 hover:bg-stone-100 transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-3xl text-sm text-foreground/50 hover:bg-surface-hover transition-colors cursor-pointer"
               >
                 Cancel
               </button>

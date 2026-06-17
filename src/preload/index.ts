@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld("electron", {
         callback(isMaximized),
       );
     },
+    onThemeChange: (callback: (isDark: boolean) => void) => {
+      ipcRenderer.on("theme:system-changed", (_, isDark) => callback(isDark));
+    },
   },
   images: {
     save: (buffer: ArrayBuffer, ext: string): Promise<string> =>

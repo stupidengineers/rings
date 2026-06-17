@@ -79,6 +79,7 @@ interface ElectronAPI {
       sources?: string,
     ) => Promise<ChatMessage>;
     getMessages: (sessionId: string) => Promise<ChatMessage[]>;
+    send: (sessionId: string, message: string) => Promise<string>;
   };
   ollama: {
     isRunning: () => Promise<boolean>;

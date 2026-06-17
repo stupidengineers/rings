@@ -94,6 +94,8 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.invoke("chat:addMessage", sessionId, role, content, sources),
     getMessages: (sessionId: string): Promise<ChatMessage[]> =>
       ipcRenderer.invoke("chat:messages", sessionId),
+    send: (sessionId: string, message: string): Promise<string> =>
+      ipcRenderer.invoke("chat:send", sessionId, message),
   },
   ollama: {
     isRunning: (): Promise<boolean> =>

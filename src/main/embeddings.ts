@@ -29,6 +29,7 @@ export async function embedNote(noteId: number): Promise<void> {
   }
 
   const vector = await embedText(text);
+  if (!vector || vector.length === 0) return;
   const buffer = Buffer.from(new Float32Array(vector).buffer);
   saveEmbedding(noteId, buffer);
 }

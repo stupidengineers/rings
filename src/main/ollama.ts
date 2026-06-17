@@ -109,20 +109,37 @@ JSON:`;
   return { type: "quote" };
 }
 
-export async function embedText(text: string): Promise<number[]> {
-  const res = await fetch(`${OLLAMA_URL}/embed`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: "nomic-embed-text",
-      input: text,
-    }),
-  });
+let embedUnavailable = false;
 
-  if (!res.ok) throw new Error(`Ollama embed error: ${res.status}`);
+export async function embedText(text: string): Promise<number[] | null> {
+  if (embedUnavailable) return null;
 
-  const data = await res.json();
-  return data.embeddings?.[0] ?? [];
+  try {
+    const res = await fetch(`${OLLAMA_URL}/embed`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "nomic-embed-text",
+        input: text,
+      }),
+    });
+
+    if (res.status === 404 || res.status === 501) {
+      console.log("Embedding unavailable — pull nomic-embed-text to enable. Suppressing future attempts.");
+      embedUnavailable = true;
+      return null;
+    }
+    if (!res.ok) return null;
+
+    const data = await res.json();
+    return data.embeddings?.[0] ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function resetEmbedAvailability(): void {
+  embedUnavailable = false;
 }
 
 export async function chatStream(

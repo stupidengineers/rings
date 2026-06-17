@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { app, BrowserWindow, ipcMain, protocol, net, dialog } from "electron";
+=======
+import { app, BrowserWindow, ipcMain, protocol, net, nativeTheme } from "electron";
+>>>>>>> worktree-agent-abe145757e23e8d0f
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 import { writeFile, mkdir, readFile } from "fs/promises";
@@ -60,9 +64,12 @@ function createWindow(): void {
     minHeight: 400,
     frame: false,
     backgroundColor: "#ffffff",
+    ...(process.platform === "darwin" ? { vibrancy: "under-window" as const } : {}),
+    ...(process.platform === "win32" ? { backgroundMaterial: "mica" as const } : {}),
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false,
+      backgroundThrottling: false,
     },
   });
 
@@ -229,6 +236,10 @@ app.whenReady().then(() => {
   registerProtocol();
   initDatabase();
   createWindow();
+
+  nativeTheme.on("updated", () => {
+    mainWindow?.webContents.send("theme:system-changed", nativeTheme.shouldUseDarkColors);
+  });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

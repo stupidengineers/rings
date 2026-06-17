@@ -47,6 +47,7 @@ interface ElectronAPI {
     close: () => Promise<void>;
     isMaximized: () => Promise<boolean>;
     onMaximizeChange: (callback: (isMaximized: boolean) => void) => void;
+    onThemeChange: (callback: (isDark: boolean) => void) => void;
   };
   images: {
     save: (buffer: ArrayBuffer, ext: string) => Promise<string>;

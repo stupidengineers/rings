@@ -72,10 +72,10 @@ export default function Vault() {
 
   const displayNotes = searchResults ?? notes;
 
-  // Distribute notes into columns (masonry-like)
+  // Distribute notes into columns by ID so each note stays in the same column on delete
   const columns: Note[][] = [[], [], [], []];
-  displayNotes.forEach((note, i) => {
-    columns[i % 4].push(note);
+  displayNotes.forEach((note) => {
+    columns[note.id % 4].push(note);
   });
 
   return (

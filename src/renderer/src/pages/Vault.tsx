@@ -73,10 +73,14 @@ export default function Vault() {
   const displayNotes = searchResults ?? notes;
 
   // Distribute notes into columns by ID so each note stays in the same column on delete
-  const columns: Note[][] = [[], [], [], []];
+  // Then filter out empty columns and push them to the end so there are no gaps
+  const colMap: Note[][] = [[], [], [], []];
   displayNotes.forEach((note) => {
-    columns[note.id % 4].push(note);
+    colMap[note.id % 4].push(note);
   });
+  const filled = colMap.filter((c) => c.length > 0);
+  const empty = colMap.filter((c) => c.length === 0);
+  const columns = [...filled, ...empty];
 
   return (
     <div className="w-full select-none h-fit flex flex-col px-4">

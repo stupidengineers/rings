@@ -28,12 +28,15 @@ import {
   searchNotes,
 } from "./database";
 import {
-  isOllamaRunning,
-  getOllamaModels,
+  isBackendRunning,
+  getModels,
   classifyNote,
   embedText,
   chatStream,
   clearModelCache,
+  isMlxRunning,
+  isOllamaRunning,
+  getOllamaModels,
 } from "./ollama";
 import {
   queueEmbedding,
@@ -162,8 +165,9 @@ ipcMain.handle("chat:summary", (_, sessionId: string) =>
 );
 
 // Ollama
-ipcMain.handle("ollama:isRunning", () => isOllamaRunning());
-ipcMain.handle("ollama:models", () => getOllamaModels());
+ipcMain.handle("ollama:isRunning", () => isBackendRunning());
+ipcMain.handle("ollama:models", () => getModels());
+ipcMain.handle("mlx:isRunning", () => isMlxRunning());
 ipcMain.handle(
   "ollama:classify",
   async (_, text: string, imageCount: number) => {

@@ -142,34 +142,82 @@ function ModelSelect({
   );
 }
 
+function BackendSelector({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const options = [
+    { label: "Ollama", value: "ollama" },
+    { label: "MLX", value: "mlx" },
+  ];
+
+  return (
+    <LayoutGroup>
+      <div className="relative flex gap-0.5 bg-border/40 rounded-full p-1">
+        {options.map((opt) => (
+          <button
+            key={opt.value}
+            onClick={() => onChange(opt.value)}
+            className="relative px-4 py-1 text-sm rounded-full cursor-pointer z-10"
+          >
+            {value === opt.value && (
+              <motion.div
+                layoutId="backend-pill"
+                className="absolute inset-0 bg-surface rounded-full shadow-sm"
+                transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              />
+            )}
+            <span className={`relative z-10 transition-colors duration-150 ${
+              value === opt.value ? "text-foreground" : "text-foreground/50 hover:text-foreground/70"
+            }`}>
+              {opt.label}
+            </span>
+          </button>
+        ))}
+      </div>
+    </LayoutGroup>
+  );
+}
+
 export default function Settings() {
   const [notifications, setNotifications] = useState(true);
   const [autoSave, setAutoSave] = useState(true);
   const [models, setModels] = useState<string[]>([]);
-  const [ollamaRunning, setOllamaRunning] = useState(false);
+  const [backendRunning, setBackendRunning] = useState(false);
+  const [backend, setBackend] = useState("ollama");
   const [classifyModel, setClassifyModel] = useState("");
   const [chatModel, setChatModel] = useState("");
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    loadModels();
-    loadPreferences();
+    loadPreferences().then(() => loadModels());
   }, []);
+
+  useEffect(() => {
+    loadModels();
+  }, [backend]);
 
   async function loadModels() {
     const running = await window.electron?.ollama.isRunning();
-    setOllamaRunning(running ?? false);
+    setBackendRunning(running ?? false);
     if (running) {
       const m = await window.electron?.ollama.models();
       setModels(m ?? []);
+    } else {
+      setModels([]);
     }
   }
 
   async function loadPreferences() {
+    const b = await window.electron?.preferences.get("backend");
     const cm = await window.electron?.preferences.get("model_classify");
     const ch = await window.electron?.preferences.get("model_chat");
+    if (b) setBackend(b);
     if (cm) setClassifyModel(cm);
     if (ch) setChatModel(ch);
+  }
+
+  async function handleBackendChange(value: string) {
+    setBackend(value);
+    await window.electron?.preferences.set("backend", value);
+    loadModels();
   }
 
   async function handleModelChange(role: "model_classify" | "model_chat", value: string) {
@@ -204,6 +252,14 @@ export default function Settings() {
 
       <div className="flex items-center justify-between py-4 border-b border-border">
         <div>
+          <div className="text-lg font-normal">Inference backend</div>
+          <div className="text-sm text-foreground/50 mt-0.5">Ollama or MLX for local model inference</div>
+        </div>
+        <BackendSelector value={backend} onChange={handleBackendChange} />
+      </div>
+
+      <div className="flex items-center justify-between py-4 border-b border-border">
+        <div>
           <div className="text-lg font-normal">Classification model</div>
           <div className="text-sm text-foreground/50 mt-0.5">Fast model for note type detection</div>
         </div>
@@ -215,7 +271,7 @@ export default function Settings() {
             placeholder="Auto-detect"
           />
         ) : (
-          <span className="text-foreground/40 text-sm">Ollama not running</span>
+          <span className="text-foreground/40 text-sm">{backend === "mlx" ? "MLX" : "Ollama"} not running</span>
         )}
       </div>
 
@@ -232,7 +288,7 @@ export default function Settings() {
             placeholder="Default"
           />
         ) : (
-          <span className="text-foreground/40 text-sm">Ollama not running</span>
+          <span className="text-foreground/40 text-sm">{backend === "mlx" ? "MLX" : "Ollama"} not running</span>
         )}
       </div>
 

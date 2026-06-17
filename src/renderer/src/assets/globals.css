@@ -4,7 +4,19 @@
   --color-accent: #6b7c3f;
   --color-border: #e5e0d8;
   --color-foreground: #1a1a1a;
-  --color-background: #ffffff;
+  --color-background: #f9f8f6;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f5f4f2;
+}
+
+/* Dark mode override via class on html element */
+.dark {
+  --color-accent: #8fa04f;
+  --color-border: #3d3a35;
+  --color-foreground: #e8e6e1;
+  --color-background: #1a1917;
+  --color-surface: #2a2825;
+  --color-surface-hover: #353230;
 }
 
 * {
@@ -24,6 +36,7 @@ textarea, input {
   outline: none;
   border: none;
   background: transparent;
+  color: inherit;
 }
 
 a {

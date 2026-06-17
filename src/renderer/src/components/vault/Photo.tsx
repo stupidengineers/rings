@@ -23,7 +23,7 @@ export default function Photo({ imageUrl, caption, onDelete, onEdit, layoutId }:
               duration: 0.3,
               ease: "circInOut",
             }}
-            className="text-base px-4 py-3 rounded-2xl bottom-0 w-full bg-white backdrop-blur-[2px]"
+            className="text-base px-4 py-3 rounded-2xl bottom-0 w-full bg-surface backdrop-blur-[2px]"
           >
             {caption}
           </motion.div>

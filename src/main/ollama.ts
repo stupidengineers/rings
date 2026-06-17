@@ -67,9 +67,14 @@ Type rules (be strict):
 ${imageCount >= 1 ? `- ${imageCount} image(s) attached: use photo for 1, album for multiple` : `- No images attached: NEVER output photo or album`}
 
 Content rules:
-- content: copy the user's text with proper casing. Do NOT add quotes around it. Do NOT modify the meaning.
-- author: ONLY if the user explicitly attributes a quote to someone (e.g. "... — Einstein"). Otherwise null.
+- content: the main text/thought, properly cased. Strip attribution phrases like "X said", "according to X", "X once wrote". Do NOT wrap in quotes.
+- author: extract the person's name if the input attributes the text to someone. Patterns: "X said ...", "X once said ...", "... — X", "... by X", "according to X", "X wrote ...". Use proper Title Case. If no attribution, null.
 - title: ONLY for task lists with an explicit title. Otherwise null.
+
+Examples:
+- "albert camus said to create art is to live twice" → {"type":"quote","content":"To Create Art Is to Live Twice","author":"Albert Camus","title":null}
+- "i love dogs" → {"type":"quote","content":"I Love Dogs","author":null,"title":null}
+- "buy milk, eggs" → {"type":"tasks","content":"Buy milk\nEggs","author":null,"title":null}
 
 User input: """${text.slice(0, 600)}"""
 

@@ -44,6 +44,11 @@ export function initDatabase(): void {
       done INTEGER DEFAULT 0,
       sort_order INTEGER DEFAULT 0
     );
+
+    CREATE TABLE IF NOT EXISTS preferences (
+      key TEXT PRIMARY KEY,
+      value TEXT NOT NULL
+    );
   `);
 }
 
@@ -206,4 +211,35 @@ export function toggleTask(noteId: number, taskIndex: number): void {
       task.id,
     );
   }
+}
+
+export function getPreference(key: string): string | null {
+  const row = db
+    .prepare("SELECT value FROM preferences WHERE key = ?")
+    .get(key) as { value: string } | undefined;
+  return row?.value ?? null;
+}
+
+export function setPreference(key: string, value: string): void {
+  db.prepare(
+    "INSERT INTO preferences (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+  ).run(key, value);
+}
+
+export function getAllPreferences(): Record<string, string> {
+  const rows = db
+    .prepare("SELECT key, value FROM preferences")
+    .all() as { key: string; value: string }[];
+  const prefs: Record<string, string> = {};
+  for (const row of rows) {
+    prefs[row.key] = row.value;
+  }
+  return prefs;
+}
+
+export function clearAllData(): void {
+  db.exec("DELETE FROM tasks");
+  db.exec("DELETE FROM images");
+  db.exec("DELETE FROM notes");
+  db.exec("DELETE FROM preferences");
 }

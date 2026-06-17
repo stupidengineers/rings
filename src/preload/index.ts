@@ -47,4 +47,20 @@ contextBridge.exposeInMainWorld("electron", {
     toggleTask: (noteId: number, taskIndex: number): Promise<void> =>
       ipcRenderer.invoke("notes:toggleTask", noteId, taskIndex),
   },
+  preferences: {
+    get: (key: string): Promise<string | null> =>
+      ipcRenderer.invoke("preferences:get", key),
+    set: (key: string, value: string): Promise<void> =>
+      ipcRenderer.invoke("preferences:set", key, value),
+    getAll: (): Promise<Record<string, string>> =>
+      ipcRenderer.invoke("preferences:getAll"),
+  },
+  ollama: {
+    models: (): Promise<string[]> => ipcRenderer.invoke("ollama:models"),
+    isRunning: (): Promise<boolean> => ipcRenderer.invoke("ollama:isRunning"),
+  },
+  data: {
+    export: (): Promise<string | null> => ipcRenderer.invoke("data:export"),
+    clear: (): Promise<void> => ipcRenderer.invoke("data:clear"),
+  },
 });

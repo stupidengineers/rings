@@ -36,6 +36,19 @@ interface ElectronAPI {
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
   };
+  preferences: {
+    get: (key: string) => Promise<string | null>;
+    set: (key: string, value: string) => Promise<void>;
+    getAll: () => Promise<Record<string, string>>;
+  };
+  ollama: {
+    models: () => Promise<string[]>;
+    isRunning: () => Promise<boolean>;
+  };
+  data: {
+    export: () => Promise<string | null>;
+    clear: () => Promise<void>;
+  };
 }
 
 interface Window {

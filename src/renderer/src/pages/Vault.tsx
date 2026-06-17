@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AnimatePresence } from "motion/react";
 import List from "../components/vault/List";
 import New from "../components/vault/New";
@@ -72,15 +72,43 @@ export default function Vault() {
 
   const displayNotes = searchResults ?? notes;
 
-  // Round-robin into columns by sorted position, not by ID.
-  // This fills columns evenly left-to-right. On delete, a note's position
-  // index shifts by at most 1, so it either stays or moves one column —
-  // never jumps across a gap.
+  // Stable column assignments: each note gets a column once and keeps it.
+  // Delete only causes vertical shift within that column.
+  // When a column empties, remaining columns collapse left.
   const NUM_COLS = 5;
-  const columns: Note[][] = Array.from({ length: NUM_COLS }, () => []);
-  displayNotes.forEach((note, i) => {
-    columns[i % NUM_COLS].push(note);
-  });
+  const colMapRef = useRef<Map<number, number>>(new Map());
+
+  const colMap = colMapRef.current;
+  const activeIds = new Set(displayNotes.map((n) => n.id));
+
+  // Clean up assignments for notes that no longer exist
+  for (const id of colMap.keys()) {
+    if (!activeIds.has(id)) colMap.delete(id);
+  }
+
+  // Assign new notes to the shortest column (left-to-right tiebreak)
+  const colCounts = Array.from({ length: NUM_COLS }, () => 0);
+  for (const col of colMap.values()) colCounts[col]++;
+
+  for (const note of displayNotes) {
+    if (!colMap.has(note.id)) {
+      let minIdx = 0;
+      for (let i = 1; i < NUM_COLS; i++) {
+        if (colCounts[i] < colCounts[minIdx]) minIdx = i;
+      }
+      colMap.set(note.id, minIdx);
+      colCounts[minIdx]++;
+    }
+  }
+
+  // Build columns from stable assignments
+  const rawColumns: Note[][] = Array.from({ length: NUM_COLS }, () => []);
+  for (const note of displayNotes) {
+    rawColumns[colMap.get(note.id)!].push(note);
+  }
+
+  // Only render non-empty columns so they collapse left naturally
+  const columns = rawColumns.filter((c) => c.length > 0);
 
   return (
     <div className="w-full select-none h-fit flex flex-col px-4">
@@ -98,7 +126,7 @@ export default function Vault() {
           </p>
         </div>
       ) : (
-        <div className="w-full mt-4 h-fit grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 gap-2">
+        <div className="w-full mt-4 h-fit grid gap-2" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 280px))` }}>
           {columns.map((col, colIdx) => (
             <div key={colIdx} className="w-full h-fit flex flex-col gap-2">
               {colIdx === 0 && !isSearching && <New />}

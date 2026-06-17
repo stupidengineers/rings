@@ -62,6 +62,11 @@ contextBridge.exposeInMainWorld("electron", {
       ipcRenderer.invoke("notes:update", id, data),
     toggleTask: (noteId: number, taskIndex: number): Promise<void> =>
       ipcRenderer.invoke("notes:toggleTask", noteId, taskIndex),
+    search: (
+      query: string,
+      options?: { limit?: number; type?: string },
+    ): Promise<{ note: Note; score: number; source: "vector" | "fts" | "hybrid" }[]> =>
+      ipcRenderer.invoke("notes:search", query, options),
   },
   preferences: {
     get: (key: string): Promise<string | null> =>

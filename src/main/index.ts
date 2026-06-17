@@ -38,6 +38,7 @@ import {
   removeEmbedding,
   embedAllNotes,
 } from "./embeddings";
+import { search } from "./search";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -168,6 +169,14 @@ ipcMain.handle("ollama:chat", async (event, messages, model) => {
     win?.webContents.send("ollama:chat-chunk", chunk);
   });
   return fullResponse;
+});
+
+// Search
+ipcMain.handle("notes:search", async (_, query: string, options?: { limit?: number; type?: string }) => {
+  if (!query.trim()) {
+    return getAllNotes().slice(0, options?.limit ?? 20).map(note => ({ note, score: 1, source: "fts" as const }));
+  }
+  return search(query, options);
 });
 
 // Embeddings

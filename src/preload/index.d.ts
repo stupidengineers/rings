@@ -1,3 +1,9 @@
+interface SearchResult {
+  note: Note;
+  score: number;
+  source: "vector" | "fts" | "hybrid";
+}
+
 interface NoteData {
   type: "photo" | "album" | "quote" | "tasks";
   content?: string;
@@ -51,6 +57,10 @@ interface ElectronAPI {
     delete: (id: number) => Promise<void>;
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
+    search: (
+      query: string,
+      options?: { limit?: number; type?: string },
+    ) => Promise<SearchResult[]>;
   };
   preferences: {
     get: (key: string) => Promise<string | null>;

@@ -470,3 +470,9 @@ export function clearAllData(): void {
   db.exec("DELETE FROM notes");
   db.exec("DELETE FROM preferences");
 }
+
+export function getAllEmbeddings(): { note_id: number; embedding: Buffer }[] {
+  return db
+    .prepare("SELECT note_id, embedding FROM note_embeddings")
+    .all() as { note_id: number; embedding: Buffer }[];
+}

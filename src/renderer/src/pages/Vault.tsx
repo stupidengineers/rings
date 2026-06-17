@@ -72,12 +72,14 @@ export default function Vault() {
 
   const displayNotes = searchResults ?? notes;
 
-  // Fixed column slots — grid breakpoints control how many are visible
-  // sm:2, md:3, lg:4, 2xl:5. Notes stay in the same column on delete.
+  // Round-robin into columns by sorted position, not by ID.
+  // This fills columns evenly left-to-right. On delete, a note's position
+  // index shifts by at most 1, so it either stays or moves one column —
+  // never jumps across a gap.
   const NUM_COLS = 5;
   const columns: Note[][] = Array.from({ length: NUM_COLS }, () => []);
-  displayNotes.forEach((note) => {
-    columns[note.id % NUM_COLS].push(note);
+  displayNotes.forEach((note, i) => {
+    columns[i % NUM_COLS].push(note);
   });
 
   return (

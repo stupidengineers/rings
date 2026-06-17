@@ -1,4 +1,4 @@
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 import Titlebar from "./Titlebar";
 import { Link, useLocation } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
@@ -41,23 +41,14 @@ function NavItems() {
           data-nav={item.label.toLowerCase()}
           className="relative px-4 hover:bg-foreground/10 cursor-pointer py-1.5 rounded-full flex transition-all duration-200 text-foreground no-underline"
         >
-          <AnimatePresence>
-            {index === active && (
-              <motion.div
-                key="pill"
-                layoutId="navbar-pill"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                style={{ borderRadius: 24 }}
-                transition={{
-                  layout: { type: "spring", stiffness: 500, damping: 35 },
-                  opacity: { duration: 0.12 },
-                }}
-                className="absolute inset-0 border-2 border-accent z-10"
-              />
-            )}
-          </AnimatePresence>
+          {index === active && (
+            <motion.div
+              layoutId="navbar-pill"
+              style={{ borderRadius: 24 }}
+              transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              className="absolute inset-0 border-2 border-accent z-10"
+            />
+          )}
           <div className="z-0">{item.label}</div>
         </Link>
       ))}

@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AddCircleIcon } from "@hugeicons/core-free-icons";
 
 const navItems = [
+  { label: "Chat", href: "/chat" },
   { label: "Vault", href: "/vault" },
   { label: "Settings", href: "/settings" },
 ];

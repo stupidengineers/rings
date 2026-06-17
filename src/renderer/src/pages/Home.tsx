@@ -38,25 +38,33 @@ export default function Home() {
       let author: string | undefined;
       let cleanContent = text;
 
-      const running = await isOllamaRunning();
-      if (running) {
-        const result = await classifyNote(text, images.length);
-        noteType = result.type;
-        title = result.title;
-        author = result.author;
-        const PROMPT_PHRASES = ["cleaned up", "remove instructions", "main body", "null if none", "otherwise null"];
-        const isGarbage = result.content &&
-          PROMPT_PHRASES.some((p) => result.content!.toLowerCase().includes(p));
-        if (!isGarbage) {
-          let c = result.content ?? (images.length > 0 ? "" : text);
-          c = c.replace(/^["'"]+|["'"]+$/g, "").trim();
-          cleanContent = c;
-        }
+      // Images override LLM classification — type is determined by image count
+      if (images.length > 1) {
+        noteType = "album";
+        cleanContent = text.trim();
+      } else if (images.length === 1) {
+        noteType = "photo";
+        cleanContent = text.trim();
       } else {
-        if (images.length > 1) noteType = "album";
-        else if (images.length === 1) noteType = "photo";
-        else if (text.trim().startsWith('"')) noteType = "quote";
-        else if (text.includes("\n- ") || text.includes("\n* ")) noteType = "tasks";
+        // Text-only: use LLM for classification
+        const running = await isOllamaRunning();
+        if (running) {
+          const result = await classifyNote(text, 0);
+          noteType = result.type;
+          title = result.title;
+          author = result.author;
+          const PROMPT_PHRASES = ["cleaned up", "remove instructions", "main body", "null if none", "otherwise null"];
+          const isGarbage = result.content &&
+            PROMPT_PHRASES.some((p) => result.content!.toLowerCase().includes(p));
+          if (!isGarbage) {
+            let c = result.content ?? text;
+            c = c.replace(/^["'"]+|["'"]+$/g, "").trim();
+            cleanContent = c;
+          }
+        } else {
+          if (text.trim().startsWith('"')) noteType = "quote";
+          else if (text.includes("\n- ") || text.includes("\n* ")) noteType = "tasks";
+        }
       }
 
       let taskLines: string[] | undefined;

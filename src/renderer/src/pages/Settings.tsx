@@ -263,7 +263,7 @@ export default function Settings() {
           <div className="text-lg font-normal">Classification model</div>
           <div className="text-sm text-foreground/50 mt-0.5">Fast model for note type detection</div>
         </div>
-        {ollamaRunning ? (
+        {backendRunning ? (
           <ModelSelect
             value={classifyModel}
             onChange={(v) => handleModelChange("model_classify", v)}
@@ -280,7 +280,7 @@ export default function Settings() {
           <div className="text-lg font-normal">Chat model</div>
           <div className="text-sm text-foreground/50 mt-0.5">Larger model for vault conversations</div>
         </div>
-        {ollamaRunning ? (
+        {backendRunning ? (
           <ModelSelect
             value={chatModel}
             onChange={(v) => handleModelChange("model_chat", v)}

@@ -10,6 +10,7 @@ import {
   deleteNote,
   updateNote,
   toggleTask,
+  searchNotes,
 } from "./database";
 
 let mainWindow: BrowserWindow | null = null;
@@ -83,6 +84,11 @@ ipcMain.handle("notes:delete", (_, id: number) => deleteNote(id));
 ipcMain.handle("notes:update", (_, id: number, data) => updateNote(id, data));
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
+);
+ipcMain.handle(
+  "notes:search",
+  (_, query: string, options?: { limit?: number; type?: string }) =>
+    searchNotes(query, options),
 );
 
 app.whenReady().then(() => {

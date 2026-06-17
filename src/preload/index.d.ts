@@ -35,6 +35,10 @@ interface ElectronAPI {
     delete: (id: number) => Promise<void>;
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
+    search: (
+      query: string,
+      options?: { limit?: number; type?: string },
+    ) => Promise<{ note: Note; score: number }[]>;
   };
 }
 

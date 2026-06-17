@@ -148,15 +148,21 @@ async function classifyViaOllama(text: string, imageCount: number, model?: strin
   return parseClassifyResponse(data.response?.trim() ?? "", text, imageCount);
 }
 
+async function getMlxModel(): Promise<string> {
+  const models = await getMlxModels();
+  return models[0] ?? "default";
+}
+
 async function classifyViaMlx(text: string, imageCount: number): Promise<ClassifyResult> {
+  const model = await getMlxModel();
   const res = await fetch(`${MLX_URL}/v1/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "default",
+      model,
       messages: [{ role: "user", content: CLASSIFY_PROMPT(text, imageCount) }],
       temperature: 0,
-      max_tokens: 256,
+      max_tokens: 1024,
     }),
   });
   if (!res.ok) throw new Error(`MLX error: ${res.status}`);
@@ -248,7 +254,7 @@ async function chatStreamMlx(
   const res = await fetch(`${MLX_URL}/v1/chat/completions`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ model: "default", messages, stream: true }),
+    body: JSON.stringify({ model: await getMlxModel(), messages, stream: true }),
   });
   if (!res.ok) throw new Error(`MLX chat error: ${res.status}`);
 

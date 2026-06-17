@@ -10,6 +10,17 @@ import {
   deleteNote,
   updateNote,
   toggleTask,
+  getPreference,
+  setPreference,
+  getAllPreferences,
+  createChatSession,
+  getChatSessions,
+  getChatSession,
+  deleteChatSession,
+  addChatMessage,
+  getChatMessages,
+  saveChatSummary,
+  getChatSummary,
 } from "./database";
 
 let mainWindow: BrowserWindow | null = null;
@@ -83,6 +94,37 @@ ipcMain.handle("notes:delete", (_, id: number) => deleteNote(id));
 ipcMain.handle("notes:update", (_, id: number, data) => updateNote(id, data));
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
+);
+
+// Preferences CRUD
+ipcMain.handle("prefs:get", (_, key: string) => getPreference(key));
+ipcMain.handle("prefs:set", (_, key: string, value: string) =>
+  setPreference(key, value),
+);
+ipcMain.handle("prefs:getAll", () => getAllPreferences());
+
+// Chat CRUD
+ipcMain.handle("chat:createSession", (_, title?: string) =>
+  createChatSession(randomUUID(), title),
+);
+ipcMain.handle("chat:sessions", () => getChatSessions());
+ipcMain.handle("chat:session", (_, id: string) => getChatSession(id));
+ipcMain.handle("chat:deleteSession", (_, id: string) => deleteChatSession(id));
+ipcMain.handle(
+  "chat:addMessage",
+  (_, sessionId: string, role: "user" | "assistant" | "system", content: string, sources?: string) =>
+    addChatMessage(sessionId, role, content, sources),
+);
+ipcMain.handle("chat:messages", (_, sessionId: string) =>
+  getChatMessages(sessionId),
+);
+ipcMain.handle(
+  "chat:saveSummary",
+  (_, sessionId: string, content: string, coversThroughId: number) =>
+    saveChatSummary(sessionId, content, coversThroughId),
+);
+ipcMain.handle("chat:summary", (_, sessionId: string) =>
+  getChatSummary(sessionId),
 );
 
 app.whenReady().then(() => {

@@ -18,6 +18,22 @@ interface Note {
   tasks: { content: string; done: boolean }[];
 }
 
+interface ChatSession {
+  id: string;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ChatMessage {
+  id: number;
+  session_id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  sources: string | null;
+  created_at: string;
+}
+
 interface ElectronAPI {
   window: {
     minimize: () => Promise<void>;
@@ -35,6 +51,24 @@ interface ElectronAPI {
     delete: (id: number) => Promise<void>;
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
+  };
+  preferences: {
+    get: (key: string) => Promise<string | null>;
+    set: (key: string, value: string) => Promise<void>;
+    getAll: () => Promise<Record<string, string>>;
+  };
+  chat: {
+    createSession: (title?: string) => Promise<ChatSession>;
+    getSessions: () => Promise<ChatSession[]>;
+    getSession: (id: string) => Promise<ChatSession | null>;
+    deleteSession: (id: string) => Promise<void>;
+    addMessage: (
+      sessionId: string,
+      role: "user" | "assistant" | "system",
+      content: string,
+      sources?: string,
+    ) => Promise<ChatMessage>;
+    getMessages: (sessionId: string) => Promise<ChatMessage[]>;
   };
 }
 

@@ -64,7 +64,7 @@ Type rules (be strict):
 - "tasks" ONLY if the input is a list of things to do (comma-separated items, bullet points, numbered items, or multiple actions). Example: "buy milk, walk dog" → tasks
 - "quote" for EVERYTHING else — any thought, name, phrase, sentence, observation, feeling, or statement. This is the default.
 - NEVER use "photo" or "album" unless images are attached
-${imageCount >= 1 ? `- ${imageCount} image(s) attached: use "photo" for 1, "album" for multiple` : "- No images attached: NEVER output "photo" or "album""}
+${imageCount >= 1 ? `- ${imageCount} image(s) attached: use photo for 1, album for multiple` : `- No images attached: NEVER output photo or album`}
 
 Content rules:
 - content: copy the user's text with proper casing. Do NOT add quotes around it. Do NOT modify the meaning.

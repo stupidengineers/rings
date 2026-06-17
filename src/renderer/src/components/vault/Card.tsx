@@ -17,7 +17,7 @@ function Option({ children }: { children: ReactNode }) {
           duration: 0.15,
         },
       }}
-      className="size-10 z-30 transition-colors rounded-full flex items-center justify-center cursor-pointer  backdrop-blur-[2px] border-border/20 hover:border-border/30 hover:bg-stone-800/50  border bg-stone-900/50 text-white"
+      className="size-10 z-30 transition-colors rounded-full flex items-center justify-center cursor-pointer backdrop-blur-[2px] border-border/20 hover:border-border/30 hover:bg-foreground/50 border bg-foreground/50 text-white"
     >
       {children}
     </motion.div>
@@ -46,7 +46,7 @@ export default function Card({
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover="hover"
       transition={{ layout: { type: "spring", stiffness: 350, damping: 30 } }}
-      className="w-full h-fit rounded-3xl ring-0 hover:ring-4 transition-shadow ring-border/50 text-justify text-3xl font-light relative"
+      className="w-full h-fit rounded-3xl shadow-none hover:shadow-[0_4px_12px_rgba(28,25,23,0.08)] transition-shadow duration-200 text-justify text-3xl font-light relative"
     >
       {showOptions && (
         <>

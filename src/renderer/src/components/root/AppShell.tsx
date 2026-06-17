@@ -29,7 +29,7 @@ function NavItems() {
     <div className="flex gap-2 items-center h-full">
       <Link
         to="/"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-3xl bg-accent text-white text-sm font-light hover:opacity-90 transition-opacity cursor-pointer no-underline shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)]"
+        className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent text-white text-sm font-light hover:opacity-90 transition-opacity cursor-pointer no-underline shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)]"
       >
         <HugeiconsIcon icon={AddCircleIcon} size={16} />
         New note
@@ -38,7 +38,7 @@ function NavItems() {
         <Link
           key={index + "navbar"}
           to={item.href}
-          className="relative px-4 hover:bg-stone-900/10 cursor-pointer py-1 rounded-3xl flex transition-all duration-300 text-foreground no-underline"
+          className="relative px-4 hover:bg-foreground/10 cursor-pointer py-1.5 rounded-full flex transition-all duration-200 text-foreground no-underline"
         >
           {index + 1 === (isHome ? -1 : active >= 0 ? active : -1) && (
             <motion.div

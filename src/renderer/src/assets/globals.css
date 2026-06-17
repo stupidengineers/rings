@@ -5,6 +5,11 @@
   --color-border: #e5e0d8;
   --color-foreground: #1a1a1a;
   --color-background: #ffffff;
+  --color-surface: #faf9f7;
+  --color-surface-hover: #f5f3f0;
+  --shadow-warm-sm: 0 1px 3px rgba(28,25,23,0.06);
+  --shadow-warm-md: 0 4px 12px rgba(28,25,23,0.08);
+  --shadow-warm-lg: 0 8px 24px rgba(28,25,23,0.12);
 }
 
 * {

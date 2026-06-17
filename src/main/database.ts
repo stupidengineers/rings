@@ -70,7 +70,6 @@ export function initDatabase(): void {
       sort_order INTEGER DEFAULT 0
     );
 
-<<<<<<< HEAD
     CREATE VIRTUAL TABLE IF NOT EXISTS note_fts USING fts5(note_id, content);
 
     CREATE TABLE IF NOT EXISTS note_embeddings (
@@ -105,11 +104,6 @@ export function initDatabase(): void {
     CREATE TABLE IF NOT EXISTS preferences (
       key TEXT PRIMARY KEY,
       value TEXT
-=======
-    CREATE TABLE IF NOT EXISTS preferences (
-      key TEXT PRIMARY KEY,
-      value TEXT NOT NULL
->>>>>>> worktree-agent-a06dce57e83d3c65e
     );
   `);
 }
@@ -306,7 +300,6 @@ export function toggleTask(noteId: number, taskIndex: number): void {
   }
 }
 
-<<<<<<< HEAD
 // --- FTS search ---
 
 export function searchNotesFTS(query: string): Note[] {
@@ -321,8 +314,6 @@ export function searchNotesFTS(query: string): Note[] {
 
 // --- Preferences ---
 
-=======
->>>>>>> worktree-agent-a06dce57e83d3c65e
 export function getPreference(key: string): string | null {
   const row = db
     .prepare("SELECT value FROM preferences WHERE key = ?")
@@ -337,16 +328,10 @@ export function setPreference(key: string, value: string): void {
 }
 
 export function getAllPreferences(): Record<string, string> {
-<<<<<<< HEAD
   const rows = db.prepare("SELECT key, value FROM preferences").all() as {
     key: string;
     value: string;
   }[];
-=======
-  const rows = db
-    .prepare("SELECT key, value FROM preferences")
-    .all() as { key: string; value: string }[];
->>>>>>> worktree-agent-a06dce57e83d3c65e
   const prefs: Record<string, string> = {};
   for (const row of rows) {
     prefs[row.key] = row.value;
@@ -354,7 +339,6 @@ export function getAllPreferences(): Record<string, string> {
   return prefs;
 }
 
-<<<<<<< HEAD
 // --- Chat sessions ---
 
 export function createChatSession(id: string, title?: string): ChatSession {
@@ -478,11 +462,11 @@ export function getNoteCount(): number {
     .prepare("SELECT COUNT(*) as count FROM notes")
     .get() as { count: number };
   return row.count;
-=======
+}
+
 export function clearAllData(): void {
   db.exec("DELETE FROM tasks");
   db.exec("DELETE FROM images");
   db.exec("DELETE FROM notes");
   db.exec("DELETE FROM preferences");
->>>>>>> worktree-agent-a06dce57e83d3c65e
 }

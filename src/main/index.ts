@@ -14,7 +14,6 @@ import {
   getPreference,
   setPreference,
   getAllPreferences,
-<<<<<<< HEAD
   createChatSession,
   getChatSessions,
   getChatSession,
@@ -25,9 +24,7 @@ import {
   getChatSummary,
   getEmbeddingCount,
   getNoteCount,
-=======
   clearAllData,
->>>>>>> worktree-agent-a06dce57e83d3c65e
 } from "./database";
 import {
   isOllamaRunning,
@@ -126,7 +123,6 @@ ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
 );
 
-<<<<<<< HEAD
 // Preferences CRUD
 ipcMain.handle("prefs:get", (_, key: string) => getPreference(key));
 ipcMain.handle("prefs:set", (_, key: string, value: string) =>
@@ -180,35 +176,6 @@ ipcMain.handle("embeddings:status", () => ({
   total: getNoteCount(),
   embedded: getEmbeddingCount(),
 }));
-=======
-// Preferences
-ipcMain.handle("preferences:get", (_, key: string) => getPreference(key));
-ipcMain.handle("preferences:set", (_, key: string, value: string) =>
-  setPreference(key, value),
-);
-ipcMain.handle("preferences:getAll", () => getAllPreferences());
-
-// Ollama proxy (renderer can't always reach localhost due to CSP)
-ipcMain.handle("ollama:models", async () => {
-  try {
-    const res = await net.fetch("http://localhost:11434/api/tags");
-    const data = await res.json();
-    return (
-      data.models?.map((m: { name: string }) => m.name) ?? []
-    );
-  } catch {
-    return [];
-  }
-});
-
-ipcMain.handle("ollama:isRunning", async () => {
-  try {
-    const res = await net.fetch("http://localhost:11434/api/tags");
-    return res.ok;
-  } catch {
-    return false;
-  }
-});
 
 // Data export
 ipcMain.handle("data:export", async () => {
@@ -242,7 +209,6 @@ ipcMain.handle("data:export", async () => {
 ipcMain.handle("data:clear", () => {
   clearAllData();
 });
->>>>>>> worktree-agent-a06dce57e83d3c65e
 
 app.whenReady().then(() => {
   imagesDir = join(app.getPath("userData"), "images");

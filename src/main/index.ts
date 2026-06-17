@@ -33,6 +33,7 @@ import {
   classifyNote,
   embedText,
   chatStream,
+  clearModelCache,
 } from "./ollama";
 import {
   queueEmbedding,
@@ -130,9 +131,10 @@ ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
 );
 // Preferences CRUD
 ipcMain.handle("prefs:get", (_, key: string) => getPreference(key));
-ipcMain.handle("prefs:set", (_, key: string, value: string) =>
-  setPreference(key, value),
-);
+ipcMain.handle("prefs:set", (_, key: string, value: string) => {
+  setPreference(key, value);
+  if (key === "model_classify") clearModelCache();
+});
 ipcMain.handle("prefs:getAll", () => getAllPreferences());
 
 // Chat CRUD
@@ -164,7 +166,10 @@ ipcMain.handle("ollama:isRunning", () => isOllamaRunning());
 ipcMain.handle("ollama:models", () => getOllamaModels());
 ipcMain.handle(
   "ollama:classify",
-  (_, text: string, imageCount: number) => classifyNote(text, imageCount),
+  async (_, text: string, imageCount: number) => {
+    const userModel = getPreference("model_classify");
+    return classifyNote(text, imageCount, userModel ?? undefined);
+  },
 );
 ipcMain.handle("ollama:embed", (_, text: string) => embedText(text));
 ipcMain.handle("chat:send", async (event, sessionId: string, message: string) => {

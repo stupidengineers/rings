@@ -2,12 +2,14 @@ const OLLAMA_URL = "http://localhost:11434/api";
 
 let cachedModel: string | null = null;
 
-// Prefer small, fast models for classification
+// Prefer smarter models — classification needs reasoning ability
 const PREFERRED_CLASSIFY = [
-  "llama3.2:3b",
-  "qwen2.5:3b",
+  "qwen3:8b",
+  "llama3.1:8b",
+  "gemma3:12b",
+  "qwen2.5:7b",
   "phi4-mini:3.8b",
-  "gemma3:4b",
+  "llama3.2:3b",
 ];
 
 export interface ClassifyResult {
@@ -26,6 +28,10 @@ async function getModel(): Promise<string> {
   );
   cachedModel = preferred ?? models[0];
   return cachedModel;
+}
+
+export function clearModelCache(): void {
+  cachedModel = null;
 }
 
 export async function isOllamaRunning(): Promise<boolean> {

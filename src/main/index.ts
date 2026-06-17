@@ -1,7 +1,8 @@
-import { app, BrowserWindow, ipcMain, protocol, net } from "electron";
+import { app, BrowserWindow, ipcMain, protocol, net, dialog } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, readFile } from "fs/promises";
+import { writeFileSync, readFileSync } from "fs";
 import { randomUUID } from "crypto";
 import {
   initDatabase,
@@ -13,6 +14,7 @@ import {
   getPreference,
   setPreference,
   getAllPreferences,
+<<<<<<< HEAD
   createChatSession,
   getChatSessions,
   getChatSession,
@@ -23,6 +25,9 @@ import {
   getChatSummary,
   getEmbeddingCount,
   getNoteCount,
+=======
+  clearAllData,
+>>>>>>> worktree-agent-a06dce57e83d3c65e
 } from "./database";
 import {
   isOllamaRunning,
@@ -121,6 +126,7 @@ ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
 );
 
+<<<<<<< HEAD
 // Preferences CRUD
 ipcMain.handle("prefs:get", (_, key: string) => getPreference(key));
 ipcMain.handle("prefs:set", (_, key: string, value: string) =>
@@ -174,6 +180,69 @@ ipcMain.handle("embeddings:status", () => ({
   total: getNoteCount(),
   embedded: getEmbeddingCount(),
 }));
+=======
+// Preferences
+ipcMain.handle("preferences:get", (_, key: string) => getPreference(key));
+ipcMain.handle("preferences:set", (_, key: string, value: string) =>
+  setPreference(key, value),
+);
+ipcMain.handle("preferences:getAll", () => getAllPreferences());
+
+// Ollama proxy (renderer can't always reach localhost due to CSP)
+ipcMain.handle("ollama:models", async () => {
+  try {
+    const res = await net.fetch("http://localhost:11434/api/tags");
+    const data = await res.json();
+    return (
+      data.models?.map((m: { name: string }) => m.name) ?? []
+    );
+  } catch {
+    return [];
+  }
+});
+
+ipcMain.handle("ollama:isRunning", async () => {
+  try {
+    const res = await net.fetch("http://localhost:11434/api/tags");
+    return res.ok;
+  } catch {
+    return false;
+  }
+});
+
+// Data export
+ipcMain.handle("data:export", async () => {
+  if (!mainWindow) return null;
+  const result = await dialog.showSaveDialog(mainWindow, {
+    defaultPath: "rings-vault-export.json",
+    filters: [{ name: "JSON", extensions: ["json"] }],
+  });
+  if (result.canceled || !result.filePath) return null;
+
+  const notes = getAllNotes();
+  const notesWithImages = notes.map((note) => ({
+    ...note,
+    images: note.images.map((imgPath) => {
+      try {
+        const filePath = imgPath.replace("rings://images/", "");
+        const fullPath = join(imagesDir, filePath);
+        const buffer = readFileSync(fullPath);
+        return { path: imgPath, data: buffer.toString("base64") };
+      } catch {
+        return { path: imgPath, data: null };
+      }
+    }),
+  }));
+
+  writeFileSync(result.filePath, JSON.stringify(notesWithImages, null, 2));
+  return result.filePath;
+});
+
+// Data clear
+ipcMain.handle("data:clear", () => {
+  clearAllData();
+});
+>>>>>>> worktree-agent-a06dce57e83d3c65e
 
 app.whenReady().then(() => {
   imagesDir = join(app.getPath("userData"), "images");

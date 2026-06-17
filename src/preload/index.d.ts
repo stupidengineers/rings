@@ -57,6 +57,7 @@ interface ElectronAPI {
     set: (key: string, value: string) => Promise<void>;
     getAll: () => Promise<Record<string, string>>;
   };
+<<<<<<< HEAD
   chat: {
     createSession: (title?: string) => Promise<ChatSession>;
     getSessions: () => Promise<ChatSession[]>;
@@ -92,6 +93,15 @@ interface ElectronAPI {
   embeddings: {
     embedAll: () => Promise<{ total: number; embedded: number; failed: number }>;
     status: () => Promise<{ total: number; embedded: number }>
+=======
+  ollama: {
+    models: () => Promise<string[]>;
+    isRunning: () => Promise<boolean>;
+  };
+  data: {
+    export: () => Promise<string | null>;
+    clear: () => Promise<void>;
+>>>>>>> worktree-agent-a06dce57e83d3c65e
   };
 }
 

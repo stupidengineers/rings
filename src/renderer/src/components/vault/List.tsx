@@ -75,7 +75,7 @@ export default function List({ title, initialItems, onDelete, onEdit, layoutId }
             done={item.done}
           />
         ))}
-        <button className="cursor-pointer w-full px-5 py-2 text-base hover:bg-surface-hover rounded-3xl flex text-foreground/60 hover:text-foreground items-center justify-start gap-2 transition-colors duration-150">
+        <button className="cursor-pointer w-full px-5 py-2 text-base hover:bg-surface-hover rounded-full flex text-foreground/60 hover:text-foreground items-center justify-start gap-2 transition-colors duration-200">
           <HugeiconsIcon icon={AddCircleIcon} /> Add
         </button>
       </div>

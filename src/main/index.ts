@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-import { app, BrowserWindow, ipcMain, protocol, net, dialog } from "electron";
-=======
-import { app, BrowserWindow, ipcMain, protocol, net, nativeTheme } from "electron";
->>>>>>> worktree-agent-abe145757e23e8d0f
+import { app, BrowserWindow, ipcMain, protocol, net, dialog, nativeTheme } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
 import { writeFile, mkdir, readFile } from "fs/promises";

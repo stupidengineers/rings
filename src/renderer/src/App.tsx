@@ -10,29 +10,17 @@ export default function App() {
   const themeValue = useTheme();
 
   return (
-<<<<<<< HEAD
     <ThemeContext.Provider value={themeValue}>
       <HashRouter>
         <AppShell>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/chat" element={<Chat />} />
             <Route path="/vault" element={<Vault />} />
             <Route path="/settings" element={<Settings />} />
           </Routes>
         </AppShell>
       </HashRouter>
     </ThemeContext.Provider>
-=======
-    <HashRouter>
-      <AppShell>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/chat" element={<Chat />} />
-          <Route path="/vault" element={<Vault />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </AppShell>
-    </HashRouter>
->>>>>>> worktree-agent-a9c83221533c153e6
   );
 }

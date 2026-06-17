@@ -58,7 +58,7 @@ export default function EditModal({ note, onClose, onSave }: Props) {
               <h2 className="text-lg font-normal">Edit {note.type}</h2>
               <button
                 onClick={onClose}
-                className="size-8 rounded-full hover:bg-surface-hover flex items-center justify-center cursor-pointer transition-colors"
+                className="size-8 rounded-full hover:bg-foreground/10 flex items-center justify-center cursor-pointer transition-colors"
               >
                 <HugeiconsIcon icon={Cancel01Icon} size={16} />
               </button>
@@ -93,14 +93,14 @@ export default function EditModal({ note, onClose, onSave }: Props) {
             <div className="flex gap-2 justify-end">
               <button
                 onClick={onClose}
-                className="px-5 py-2 rounded-3xl text-sm text-foreground/50 hover:bg-surface-hover transition-colors cursor-pointer"
+                className="px-5 py-2 rounded-full text-sm text-foreground/50 hover:bg-foreground/10 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="px-6 py-2 rounded-3xl bg-accent text-white text-sm font-light hover:opacity-90 transition-opacity cursor-pointer shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] disabled:opacity-60"
+                className="px-6 py-2 rounded-full bg-accent text-white text-sm font-light hover:opacity-90 transition-opacity cursor-pointer shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] disabled:opacity-60"
               >
                 {saving ? "Saving..." : "Save"}
               </button>

@@ -61,7 +61,7 @@ export default function Home() {
         noteType === "tasks"
           ? cleanContent
               .split("\n")
-              .map((l) => l.replace(/^[-*]\s*/, "").trim())
+              .map((l) => l.replace(/^[-*\d.)\]]\s*/, "").trim())
               .filter(Boolean)
           : undefined;
 

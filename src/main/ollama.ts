@@ -56,9 +56,9 @@ Analyze this user note and output:
 {"type":"photo|album|quote|tasks","title":"string or null","content":"string","author":"string or null"}
 
 Rules:
-- type: photo (1 image), album (multiple images or user mentions album), quote (quoted text), tasks (bullet/numbered list)
-- title: extract album name or list title if mentioned, properly cased, else null
-- content: extract the meaningful descriptor or subject from the user's message, strip instructional verbs like "save", "add", "create", use proper casing
+- type: photo (1 image), album (multiple images or user mentions album), quote (quoted text), tasks (any kind of list — bullet, numbered, comma-separated, or multiple items joined by "and")
+- title: extract list title if mentioned, properly cased, else null
+- content: for tasks, return each item on its own line separated by newlines (e.g. "oreo with milk, biriyani tonight" becomes "Oreo with milk\nBiriyani tonight"). For other types, extract the meaningful subject, strip instructional verbs like "save", "add", "create", use proper casing
 - author: extract quote author if present, else null
 
 ${imageCount === 1 ? "1 image attached." : imageCount > 1 ? `${imageCount} images attached.` : ""}
@@ -94,6 +94,11 @@ JSON:`;
   if (imageCount === 1) return { type: "photo" };
   if (text.trim().startsWith('"')) return { type: "quote" };
   if (text.includes("\n- ") || text.includes("\n* ")) return { type: "tasks" };
+  // Comma-separated items (2+ segments, no long prose)
+  const segments = text.split(/,\s*/).filter(Boolean);
+  if (segments.length >= 2 && segments.every((s) => s.split(" ").length <= 6)) {
+    return { type: "tasks", content: segments.map((s) => s.trim()).join("\n") };
+  }
   return { type: "photo" };
 }
 

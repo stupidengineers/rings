@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { AnimatePresence } from "motion/react";
+import { motion, AnimatePresence, LayoutGroup } from "motion/react";
 import List from "../components/vault/List";
 import New from "../components/vault/New";
 import Photo from "../components/vault/Photo";
@@ -101,14 +101,17 @@ export default function Vault() {
     }
   }
 
-  // Build columns from stable assignments
-  const rawColumns: Note[][] = Array.from({ length: NUM_COLS }, () => []);
+  // Build columns from stable assignments, keeping original index as stable key
+  const rawColumns: { id: number; notes: Note[] }[] = Array.from(
+    { length: NUM_COLS },
+    (_, i) => ({ id: i, notes: [] }),
+  );
   for (const note of displayNotes) {
-    rawColumns[colMap.get(note.id)!].push(note);
+    rawColumns[colMap.get(note.id)!].notes.push(note);
   }
 
-  // Only render non-empty columns so they collapse left naturally
-  const columns = rawColumns.filter((c) => c.length > 0);
+  // Only render non-empty columns — they slide into place via layout animation
+  const columns = rawColumns.filter((c) => c.notes.length > 0);
 
   return (
     <div className="w-full select-none h-fit flex flex-col px-4">
@@ -126,12 +129,19 @@ export default function Vault() {
           </p>
         </div>
       ) : (
-        <div className="w-full mt-4 h-fit grid gap-2" style={{ gridTemplateColumns: `repeat(${columns.length}, minmax(0, 280px))` }}>
+        <LayoutGroup>
+        <motion.div layout className="w-full mt-4 h-fit flex gap-2 items-start">
           {columns.map((col, colIdx) => (
-            <div key={colIdx} className="w-full h-fit flex flex-col gap-2">
+            <motion.div
+              key={`col-${col.id}`}
+              layout
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="h-fit flex flex-col gap-2"
+              style={{ width: 280 }}
+            >
               {colIdx === 0 && !isSearching && <New />}
               <AnimatePresence mode="popLayout">
-                {col.map((note) => {
+                {col.notes.map((note) => {
                   switch (note.type) {
                     case "photo":
                       return (
@@ -187,9 +197,10 @@ export default function Vault() {
                   }
                 })}
               </AnimatePresence>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
+        </LayoutGroup>
       )}
       {editingNote && (
         <EditModal

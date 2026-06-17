@@ -87,7 +87,7 @@ JSON:`;
       model: chosenModel,
       prompt,
       stream: false,
-      options: { num_predict: 120, temperature: 0 },
+      options: { num_predict: 1024, temperature: 0 },
     }),
   });
 

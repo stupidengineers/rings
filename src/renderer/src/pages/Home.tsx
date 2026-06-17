@@ -48,7 +48,9 @@ export default function Home() {
         const isGarbage = result.content &&
           PROMPT_PHRASES.some((p) => result.content!.toLowerCase().includes(p));
         if (!isGarbage) {
-          cleanContent = result.content ?? (images.length > 0 ? "" : text);
+          let c = result.content ?? (images.length > 0 ? "" : text);
+          c = c.replace(/^["'"]+|["'"]+$/g, "").trim();
+          cleanContent = c;
         }
       } else {
         if (images.length > 1) noteType = "album";

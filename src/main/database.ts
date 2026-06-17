@@ -285,6 +285,50 @@ export function updateNote(
   return updated;
 }
 
+export interface SearchResult {
+  note: Note;
+  score: number;
+}
+
+export function searchNotes(
+  query: string,
+  options?: { limit?: number; type?: string },
+): SearchResult[] {
+  const limit = options?.limit ?? 20;
+  const type = options?.type;
+
+  let whereClause = "1=1";
+  const params: unknown[] = [];
+
+  if (type) {
+    whereClause += " AND n.type = ?";
+    params.push(type);
+  }
+
+  if (query.trim()) {
+    whereClause +=
+      " AND (n.content LIKE ? OR n.title LIKE ? OR n.author LIKE ? OR EXISTS (SELECT 1 FROM tasks t WHERE t.note_id = n.id AND t.content LIKE ?))";
+    const like = `%${query.trim()}%`;
+    params.push(like, like, like, like);
+  }
+
+  params.push(limit);
+
+  const rows = db
+    .prepare(
+      `SELECT n.id FROM notes n WHERE ${whereClause} ORDER BY n.created_at DESC LIMIT ?`,
+    )
+    .all(...params) as { id: number }[];
+
+  return rows
+    .map((r) => {
+      const note = getNote(r.id);
+      if (!note) return null;
+      return { note, score: 1 };
+    })
+    .filter(Boolean) as SearchResult[];
+}
+
 export function toggleTask(noteId: number, taskIndex: number): void {
   const task = db
     .prepare(

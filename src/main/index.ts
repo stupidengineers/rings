@@ -25,6 +25,7 @@ import {
   getEmbeddingCount,
   getNoteCount,
   clearAllData,
+  searchNotes,
 } from "./database";
 import {
   isOllamaRunning,
@@ -123,7 +124,6 @@ ipcMain.handle("notes:update", async (_, id: number, data) => {
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
 );
-
 // Preferences CRUD
 ipcMain.handle("prefs:get", (_, key: string) => getPreference(key));
 ipcMain.handle("prefs:set", (_, key: string, value: string) =>

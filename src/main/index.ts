@@ -39,6 +39,7 @@ import {
   embedAllNotes,
 } from "./embeddings";
 import { search } from "./search";
+import { handleChatMessage } from "./chat";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -163,6 +164,10 @@ ipcMain.handle(
   (_, text: string, imageCount: number) => classifyNote(text, imageCount),
 );
 ipcMain.handle("ollama:embed", (_, text: string) => embedText(text));
+ipcMain.handle("chat:send", async (event, sessionId: string, message: string) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  return handleChatMessage(sessionId, message, win);
+});
 ipcMain.handle("ollama:chat", async (event, messages, model) => {
   const win = BrowserWindow.fromWebContents(event.sender);
   const fullResponse = await chatStream(messages, model, (chunk) => {

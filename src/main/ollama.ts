@@ -50,18 +50,21 @@ export async function classifyNote(
 ): Promise<ClassifyResult> {
   const chosenModel = model ?? (await getModel());
 
-  const prompt = `Return ONLY valid JSON, nothing else. Do not repeat these instructions.
+  const prompt = `Return ONLY valid JSON, nothing else.
 
-Analyze this user note and output:
-{"type":"photo|album|quote|tasks","title":"string or null","content":"string","author":"string or null"}
+{"type":"quote|tasks","title":null,"content":"cleaned text","author":null}
 
-Rules:
-- type: photo (1 image), album (multiple images or user mentions album), quote (quoted text), tasks (any kind of list — bullet, numbered, comma-separated, or multiple items joined by "and")
-- title: extract list title if mentioned, properly cased, else null
-- content: for tasks, return each item on its own line separated by newlines (e.g. "oreo with milk, biriyani tonight" becomes "Oreo with milk\nBiriyani tonight"). For other types, extract the meaningful subject, strip instructional verbs like "save", "add", "create", use proper casing
-- author: extract quote author if present, else null
+Type rules (be strict):
+- "tasks" ONLY if the input is a list of things to do (comma-separated items, bullet points, numbered items, or multiple actions). Example: "buy milk, walk dog" → tasks
+- "quote" for EVERYTHING else — any thought, name, phrase, sentence, observation, feeling, or statement. This is the default.
+- NEVER use "photo" or "album" unless images are attached
+${imageCount >= 1 ? `- ${imageCount} image(s) attached: use "photo" for 1, "album" for multiple` : "- No images attached: NEVER output "photo" or "album""}
 
-${imageCount === 1 ? "1 image attached." : imageCount > 1 ? `${imageCount} images attached.` : ""}
+Content rules:
+- content: copy the user's text with proper casing. Do NOT add quotes around it. Do NOT modify the meaning.
+- author: ONLY if the user explicitly attributes a quote to someone (e.g. "... — Einstein"). Otherwise null.
+- title: ONLY for task lists with an explicit title. Otherwise null.
+
 User input: """${text.slice(0, 600)}"""
 
 JSON:`;
@@ -92,14 +95,12 @@ JSON:`;
   // Smart fallback
   if (imageCount > 1) return { type: "album" };
   if (imageCount === 1) return { type: "photo" };
-  if (text.trim().startsWith('"')) return { type: "quote" };
   if (text.includes("\n- ") || text.includes("\n* ")) return { type: "tasks" };
-  // Comma-separated items (2+ segments, no long prose)
   const segments = text.split(/,\s*/).filter(Boolean);
   if (segments.length >= 2 && segments.every((s) => s.split(" ").length <= 6)) {
     return { type: "tasks", content: segments.map((s) => s.trim()).join("\n") };
   }
-  return { type: "photo" };
+  return { type: "quote" };
 }
 
 export async function embedText(text: string): Promise<number[]> {

@@ -59,7 +59,7 @@ function createWindow(): void {
     minWidth: 600,
     minHeight: 400,
     frame: false,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f9f8f6",
     ...(process.platform === "darwin" ? { vibrancy: "under-window" as const } : {}),
     ...(process.platform === "win32" ? { backgroundMaterial: "mica" as const } : {}),
     webPreferences: {

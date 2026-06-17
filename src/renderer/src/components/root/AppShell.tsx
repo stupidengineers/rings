@@ -46,10 +46,10 @@ function NavItems() {
               layoutId="navbar-pill"
               style={{ borderRadius: 24 }}
               transition={{ type: "spring", stiffness: 500, damping: 35 }}
-              className="absolute inset-0 border-2 border-accent z-10"
+              className="absolute inset-0 border-2 border-accent"
             />
           )}
-          <div className="z-0">{item.label}</div>
+          <span className="relative z-10">{item.label}</span>
         </Link>
       ))}
     </div>

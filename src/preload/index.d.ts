@@ -36,6 +36,25 @@ interface ElectronAPI {
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
   };
+  ollama: {
+    isRunning: () => Promise<boolean>;
+    models: () => Promise<string[]>;
+    classify: (
+      text: string,
+      imageCount: number,
+    ) => Promise<{
+      type: "photo" | "album" | "quote" | "tasks";
+      title?: string;
+      content?: string;
+      author?: string;
+    }>;
+    embed: (text: string) => Promise<number[]>;
+    chat: (
+      messages: Array<{ role: string; content: string }>,
+      model: string,
+    ) => Promise<string>;
+    onChatChunk: (callback: (chunk: string) => void) => void;
+  };
 }
 
 interface Window {

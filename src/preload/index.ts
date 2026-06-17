@@ -47,4 +47,28 @@ contextBridge.exposeInMainWorld("electron", {
     toggleTask: (noteId: number, taskIndex: number): Promise<void> =>
       ipcRenderer.invoke("notes:toggleTask", noteId, taskIndex),
   },
+  ollama: {
+    isRunning: (): Promise<boolean> =>
+      ipcRenderer.invoke("ollama:isRunning"),
+    models: (): Promise<string[]> =>
+      ipcRenderer.invoke("ollama:models"),
+    classify: (
+      text: string,
+      imageCount: number,
+    ): Promise<{
+      type: "photo" | "album" | "quote" | "tasks";
+      title?: string;
+      content?: string;
+      author?: string;
+    }> => ipcRenderer.invoke("ollama:classify", text, imageCount),
+    embed: (text: string): Promise<number[]> =>
+      ipcRenderer.invoke("ollama:embed", text),
+    chat: (
+      messages: Array<{ role: string; content: string }>,
+      model: string,
+    ): Promise<string> => ipcRenderer.invoke("ollama:chat", messages, model),
+    onChatChunk: (callback: (chunk: string) => void) => {
+      ipcRenderer.on("ollama:chat-chunk", (_, chunk) => callback(chunk));
+    },
+  },
 });

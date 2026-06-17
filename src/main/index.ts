@@ -11,6 +11,13 @@ import {
   updateNote,
   toggleTask,
 } from "./database";
+import {
+  isOllamaRunning,
+  getOllamaModels,
+  classifyNote,
+  embedText,
+  chatStream,
+} from "./ollama";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -84,6 +91,22 @@ ipcMain.handle("notes:update", (_, id: number, data) => updateNote(id, data));
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
 );
+
+// Ollama
+ipcMain.handle("ollama:isRunning", () => isOllamaRunning());
+ipcMain.handle("ollama:models", () => getOllamaModels());
+ipcMain.handle(
+  "ollama:classify",
+  (_, text: string, imageCount: number) => classifyNote(text, imageCount),
+);
+ipcMain.handle("ollama:embed", (_, text: string) => embedText(text));
+ipcMain.handle("ollama:chat", async (event, messages, model) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const fullResponse = await chatStream(messages, model, (chunk) => {
+    win?.webContents.send("ollama:chat-chunk", chunk);
+  });
+  return fullResponse;
+});
 
 app.whenReady().then(() => {
   imagesDir = join(app.getPath("userData"), "images");

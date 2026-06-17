@@ -44,6 +44,39 @@ export function initDatabase(): void {
       done INTEGER DEFAULT 0,
       sort_order INTEGER DEFAULT 0
     );
+
+    CREATE VIRTUAL TABLE IF NOT EXISTS notes_fts USING fts5(
+      content,
+      title,
+      author,
+      content_rowid='id'
+    );
+
+    CREATE TABLE IF NOT EXISTS note_embeddings (
+      note_id INTEGER PRIMARY KEY REFERENCES notes(id) ON DELETE CASCADE,
+      embedding BLOB NOT NULL,
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+
+  // Keep FTS index in sync via triggers
+  db.exec(`
+    CREATE TRIGGER IF NOT EXISTS notes_fts_insert AFTER INSERT ON notes BEGIN
+      INSERT INTO notes_fts(rowid, content, title, author)
+      VALUES (NEW.id, NEW.content, NEW.title, NEW.author);
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS notes_fts_delete AFTER DELETE ON notes BEGIN
+      INSERT INTO notes_fts(notes_fts, rowid, content, title, author)
+      VALUES ('delete', OLD.id, OLD.content, OLD.title, OLD.author);
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS notes_fts_update AFTER UPDATE ON notes BEGIN
+      INSERT INTO notes_fts(notes_fts, rowid, content, title, author)
+      VALUES ('delete', OLD.id, OLD.content, OLD.title, OLD.author);
+      INSERT INTO notes_fts(rowid, content, title, author)
+      VALUES (NEW.id, NEW.content, NEW.title, NEW.author);
+    END;
   `);
 }
 
@@ -191,6 +224,29 @@ export function updateNote(
   }
 
   return getNote(id);
+}
+
+export function searchNotesFTS(query: string): Note[] {
+  const rows = db
+    .prepare(
+      "SELECT rowid FROM notes_fts WHERE notes_fts MATCH ? ORDER BY rank LIMIT 50",
+    )
+    .all(query) as { rowid: number }[];
+
+  return rows.map((r) => getNote(r.rowid)!).filter(Boolean);
+}
+
+export function getAllEmbeddings(): { note_id: number; embedding: Buffer }[] {
+  return db
+    .prepare("SELECT note_id, embedding FROM note_embeddings")
+    .all() as { note_id: number; embedding: Buffer }[];
+}
+
+export function getEmbeddingCount(): number {
+  const row = db
+    .prepare("SELECT COUNT(*) as count FROM note_embeddings")
+    .get() as { count: number };
+  return row.count;
 }
 
 export function toggleTask(noteId: number, taskIndex: number): void {

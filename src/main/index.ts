@@ -11,6 +11,7 @@ import {
   updateNote,
   toggleTask,
 } from "./database";
+import { search } from "./search";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -83,6 +84,18 @@ ipcMain.handle("notes:delete", (_, id: number) => deleteNote(id));
 ipcMain.handle("notes:update", (_, id: number, data) => updateNote(id, data));
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
+);
+ipcMain.handle(
+  "notes:search",
+  async (_, query: string, options?: { limit?: number; type?: string }) => {
+    if (!query.trim()) {
+      // Empty query: return recent notes
+      return getAllNotes()
+        .slice(0, options?.limit ?? 20)
+        .map((note) => ({ note, score: 1, source: "fts" as const }));
+    }
+    return search(query, options);
+  },
 );
 
 app.whenReady().then(() => {

@@ -22,6 +22,13 @@ import {
   saveChatSummary,
   getChatSummary,
 } from "./database";
+import {
+  isOllamaRunning,
+  getOllamaModels,
+  classifyNote,
+  embedText,
+  chatStream,
+} from "./ollama";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -126,6 +133,22 @@ ipcMain.handle(
 ipcMain.handle("chat:summary", (_, sessionId: string) =>
   getChatSummary(sessionId),
 );
+
+// Ollama
+ipcMain.handle("ollama:isRunning", () => isOllamaRunning());
+ipcMain.handle("ollama:models", () => getOllamaModels());
+ipcMain.handle(
+  "ollama:classify",
+  (_, text: string, imageCount: number) => classifyNote(text, imageCount),
+);
+ipcMain.handle("ollama:embed", (_, text: string) => embedText(text));
+ipcMain.handle("ollama:chat", async (event, messages, model) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const fullResponse = await chatStream(messages, model, (chunk) => {
+    win?.webContents.send("ollama:chat-chunk", chunk);
+  });
+  return fullResponse;
+});
 
 app.whenReady().then(() => {
   imagesDir = join(app.getPath("userData"), "images");

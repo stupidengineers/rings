@@ -1,7 +1,8 @@
-import { app, BrowserWindow, ipcMain, protocol, net } from "electron";
+import { app, BrowserWindow, ipcMain, protocol, net, dialog, nativeTheme } from "electron";
 import { join } from "path";
 import { is } from "@electron-toolkit/utils";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, readFile } from "fs/promises";
+import { writeFileSync, readFileSync } from "fs";
 import { randomUUID } from "crypto";
 import {
   initDatabase,
@@ -10,7 +11,40 @@ import {
   deleteNote,
   updateNote,
   toggleTask,
+  getPreference,
+  setPreference,
+  getAllPreferences,
+  createChatSession,
+  getChatSessions,
+  getChatSession,
+  deleteChatSession,
+  addChatMessage,
+  getChatMessages,
+  saveChatSummary,
+  getChatSummary,
+  getEmbeddingCount,
+  getNoteCount,
+  clearAllData,
+  searchNotes,
 } from "./database";
+import {
+  isBackendRunning,
+  getModels,
+  classifyNote,
+  embedText,
+  chatStream,
+  clearModelCache,
+  isMlxRunning,
+  isOllamaRunning,
+  getOllamaModels,
+} from "./ollama";
+import {
+  queueEmbedding,
+  removeEmbedding,
+  embedAllNotes,
+} from "./embeddings";
+import { search } from "./search";
+import { handleChatMessage } from "./chat";
 
 let mainWindow: BrowserWindow | null = null;
 let imagesDir: string;
@@ -29,10 +63,13 @@ function createWindow(): void {
     minWidth: 600,
     minHeight: 400,
     frame: false,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#f9f8f6",
+    ...(process.platform === "darwin" ? { vibrancy: "under-window" as const } : {}),
+    ...(process.platform === "win32" ? { backgroundMaterial: "mica" as const } : {}),
     webPreferences: {
       preload: join(__dirname, "../preload/index.js"),
       sandbox: false,
+      backgroundThrottling: false,
     },
   });
 
@@ -77,19 +114,137 @@ ipcMain.handle("images:save", async (_, buffer: ArrayBuffer, ext: string) => {
 });
 
 // Notes CRUD
-ipcMain.handle("notes:create", (_, data) => createNote(data));
+ipcMain.handle("notes:create", async (_, data) => {
+  const note = createNote(data);
+  queueEmbedding(note.id);
+  return note;
+});
 ipcMain.handle("notes:getAll", () => getAllNotes());
-ipcMain.handle("notes:delete", (_, id: number) => deleteNote(id));
-ipcMain.handle("notes:update", (_, id: number, data) => updateNote(id, data));
+ipcMain.handle("notes:delete", (_, id: number) => {
+  removeEmbedding(id);
+  deleteNote(id);
+});
+ipcMain.handle("notes:update", async (_, id: number, data) => {
+  const note = updateNote(id, data);
+  if (note) queueEmbedding(note.id);
+  return note;
+});
 ipcMain.handle("notes:toggleTask", (_, noteId: number, taskIndex: number) =>
   toggleTask(noteId, taskIndex),
 );
+// Preferences CRUD
+ipcMain.handle("prefs:get", (_, key: string) => getPreference(key));
+ipcMain.handle("prefs:set", (_, key: string, value: string) => {
+  setPreference(key, value);
+  if (key === "model_classify") clearModelCache();
+});
+ipcMain.handle("prefs:getAll", () => getAllPreferences());
+
+// Chat CRUD
+ipcMain.handle("chat:createSession", (_, title?: string) =>
+  createChatSession(randomUUID(), title),
+);
+ipcMain.handle("chat:sessions", () => getChatSessions());
+ipcMain.handle("chat:session", (_, id: string) => getChatSession(id));
+ipcMain.handle("chat:deleteSession", (_, id: string) => deleteChatSession(id));
+ipcMain.handle(
+  "chat:addMessage",
+  (_, sessionId: string, role: "user" | "assistant" | "system", content: string, sources?: string) =>
+    addChatMessage(sessionId, role, content, sources),
+);
+ipcMain.handle("chat:messages", (_, sessionId: string) =>
+  getChatMessages(sessionId),
+);
+ipcMain.handle(
+  "chat:saveSummary",
+  (_, sessionId: string, content: string, coversThroughId: number) =>
+    saveChatSummary(sessionId, content, coversThroughId),
+);
+ipcMain.handle("chat:summary", (_, sessionId: string) =>
+  getChatSummary(sessionId),
+);
+
+// Ollama
+ipcMain.handle("ollama:isRunning", () => isBackendRunning());
+ipcMain.handle("ollama:models", () => getModels());
+ipcMain.handle("mlx:isRunning", () => isMlxRunning());
+ipcMain.handle(
+  "ollama:classify",
+  async (_, text: string, imageCount: number) => {
+    const userModel = getPreference("model_classify");
+    return classifyNote(text, imageCount, userModel ?? undefined);
+  },
+);
+ipcMain.handle("ollama:embed", (_, text: string) => embedText(text));
+ipcMain.handle("chat:send", async (event, sessionId: string, message: string) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  return handleChatMessage(sessionId, message, win);
+});
+ipcMain.handle("ollama:chat", async (event, messages, model) => {
+  const win = BrowserWindow.fromWebContents(event.sender);
+  const fullResponse = await chatStream(messages, model, (chunk) => {
+    win?.webContents.send("ollama:chat-chunk", chunk);
+  });
+  return fullResponse;
+});
+
+// Search
+ipcMain.handle("notes:search", async (_, query: string, options?: { limit?: number; type?: string }) => {
+  if (!query.trim()) {
+    return getAllNotes().slice(0, options?.limit ?? 20).map(note => ({ note, score: 1, source: "fts" as const }));
+  }
+  return search(query, options);
+});
+
+// Embeddings
+ipcMain.handle("embeddings:embedAll", () => embedAllNotes());
+ipcMain.handle("embeddings:status", () => ({
+  total: getNoteCount(),
+  embedded: getEmbeddingCount(),
+}));
+
+// Data export
+ipcMain.handle("data:export", async () => {
+  if (!mainWindow) return null;
+  const result = await dialog.showSaveDialog(mainWindow, {
+    defaultPath: "rings-vault-export.json",
+    filters: [{ name: "JSON", extensions: ["json"] }],
+  });
+  if (result.canceled || !result.filePath) return null;
+
+  const notes = getAllNotes();
+  const notesWithImages = notes.map((note) => ({
+    ...note,
+    images: note.images.map((imgPath) => {
+      try {
+        const filePath = imgPath.replace("rings://images/", "");
+        const fullPath = join(imagesDir, filePath);
+        const buffer = readFileSync(fullPath);
+        return { path: imgPath, data: buffer.toString("base64") };
+      } catch {
+        return { path: imgPath, data: null };
+      }
+    }),
+  }));
+
+  writeFileSync(result.filePath, JSON.stringify(notesWithImages, null, 2));
+  return result.filePath;
+});
+
+// Data clear
+ipcMain.handle("data:clear", () => {
+  clearAllData();
+});
 
 app.whenReady().then(() => {
   imagesDir = join(app.getPath("userData"), "images");
   registerProtocol();
   initDatabase();
   createWindow();
+
+  nativeTheme.on("updated", () => {
+    mainWindow?.webContents.send("theme:system-changed", nativeTheme.shouldUseDarkColors);
+  });
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow();

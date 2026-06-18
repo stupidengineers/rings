@@ -1,11 +1,12 @@
 import React, { ReactNode } from "react";
 import { motion } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { PencilEdit01Icon, Delete01Icon } from "@hugeicons/core-free-icons";
+import { Pen01Icon, Delete02Icon } from "@hugeicons/core-free-icons";
 
-function Option({ children }: { children: ReactNode }) {
+function Option({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
   return (
     <motion.div
+      onClick={onClick}
       whileTap={{ scale: 0.9 }}
       variants={{
         rest: { opacity: 0 },
@@ -17,7 +18,7 @@ function Option({ children }: { children: ReactNode }) {
           duration: 0.15,
         },
       }}
-      className="size-10 z-30 transition-colors rounded-full flex items-center justify-center cursor-pointer  backdrop-blur-[2px] border-border/20 hover:border-border/30 hover:bg-stone-800/50  border bg-stone-900/50 text-white"
+      className="size-10 z-30 transition-colors rounded-full flex items-center justify-center cursor-pointer backdrop-blur-[2px] border-border/20 hover:border-border/30 hover:bg-foreground/50 border bg-foreground/50 text-white"
     >
       {children}
     </motion.div>
@@ -46,23 +47,17 @@ export default function Card({
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover="hover"
       transition={{ layout: { type: "spring", stiffness: 350, damping: 30 } }}
-      className="w-full h-fit rounded-3xl ring-0 hover:ring-4 transition-shadow ring-border/50 text-justify text-3xl font-light relative"
+      className="w-full h-fit rounded-3xl shadow-none hover:shadow-[0_4px_12px_rgba(28,25,23,0.08)] transition-shadow duration-200 text-justify text-3xl font-light relative"
     >
       {showOptions && (
-        <>
-          <div className="absolute top-0 text-lg right-0 m-2 flex gap-1">
-            <Option>
-              <button onClick={onEdit} className="cursor-pointer">
-                <HugeiconsIcon icon={PencilEdit01Icon} />
-              </button>
-            </Option>
-            <Option>
-              <button onClick={onDelete} className="cursor-pointer">
-                <HugeiconsIcon icon={Delete01Icon} />
-              </button>
-            </Option>
-          </div>
-        </>
+        <div className="absolute top-0 text-lg right-0 m-2 flex gap-1">
+          <Option onClick={onEdit}>
+            <HugeiconsIcon icon={Pen01Icon} size={17} />
+          </Option>
+          <Option onClick={onDelete}>
+            <HugeiconsIcon icon={Delete02Icon} size={17} />
+          </Option>
+        </div>
       )}
       {children}
     </motion.div>

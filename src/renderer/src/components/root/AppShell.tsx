@@ -5,6 +5,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { AddCircleIcon } from "@hugeicons/core-free-icons";
 
 const navItems = [
+  { label: "Chat", href: "/chat" },
   { label: "Vault", href: "/vault" },
   { label: "Settings", href: "/settings" },
 ];
@@ -23,13 +24,12 @@ function Brand() {
 function NavItems() {
   const location = useLocation();
   const active = navItems.findIndex((item) => item.href === location.pathname);
-  const isHome = location.pathname === "/";
 
   return (
     <div className="flex gap-2 items-center h-full">
       <Link
         to="/"
-        className="flex items-center gap-1.5 px-3 py-1.5 rounded-3xl bg-accent text-white text-sm font-light hover:opacity-90 transition-opacity cursor-pointer no-underline shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)]"
+        className="flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent text-white! text-sm font-light hover:opacity-90 transition-opacity cursor-pointer no-underline shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)]"
       >
         <HugeiconsIcon icon={AddCircleIcon} size={16} />
         New note
@@ -38,16 +38,18 @@ function NavItems() {
         <Link
           key={index + "navbar"}
           to={item.href}
-          className="relative px-4 hover:bg-stone-900/10 cursor-pointer py-1 rounded-3xl flex transition-all duration-300 text-foreground no-underline"
+          data-nav={item.label.toLowerCase()}
+          className="relative px-4 hover:bg-foreground/10 cursor-pointer py-1.5 rounded-full flex transition-all duration-200 text-foreground no-underline"
         >
-          {index + 1 === (isHome ? -1 : active >= 0 ? active : -1) && (
+          {index === active && (
             <motion.div
-              style={{ borderRadius: 24 }}
               layoutId="navbar-pill"
-              className="absolute inset-0 border-2 border-accent z-10"
+              style={{ borderRadius: 24 }}
+              transition={{ type: "spring", stiffness: 500, damping: 35 }}
+              className="absolute inset-0 border-2 border-accent"
             />
           )}
-          <div className="z-0">{item.label}</div>
+          <span className="relative z-10">{item.label}</span>
         </Link>
       ))}
     </div>

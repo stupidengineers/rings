@@ -1,3 +1,9 @@
+interface SearchResult {
+  note: Note;
+  score: number;
+  source: "vector" | "fts" | "hybrid";
+}
+
 interface NoteData {
   type: "photo" | "album" | "quote" | "tasks";
   content?: string;
@@ -18,6 +24,22 @@ interface Note {
   tasks: { content: string; done: boolean }[];
 }
 
+interface ChatSession {
+  id: string;
+  title: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+interface ChatMessage {
+  id: number;
+  session_id: string;
+  role: "user" | "assistant" | "system";
+  content: string;
+  sources: string | null;
+  created_at: string;
+}
+
 interface ElectronAPI {
   window: {
     minimize: () => Promise<void>;
@@ -25,6 +47,7 @@ interface ElectronAPI {
     close: () => Promise<void>;
     isMaximized: () => Promise<boolean>;
     onMaximizeChange: (callback: (isMaximized: boolean) => void) => void;
+    onThemeChange: (callback: (isDark: boolean) => void) => void;
   };
   images: {
     save: (buffer: ArrayBuffer, ext: string) => Promise<string>;
@@ -35,6 +58,56 @@ interface ElectronAPI {
     delete: (id: number) => Promise<void>;
     update: (id: number, data: Partial<NoteData>) => Promise<Note | null>;
     toggleTask: (noteId: number, taskIndex: number) => Promise<void>;
+    search: (
+      query: string,
+      options?: { limit?: number; type?: string },
+    ) => Promise<SearchResult[]>;
+  };
+  preferences: {
+    get: (key: string) => Promise<string | null>;
+    set: (key: string, value: string) => Promise<void>;
+    getAll: () => Promise<Record<string, string>>;
+  };
+  chat: {
+    createSession: (title?: string) => Promise<ChatSession>;
+    getSessions: () => Promise<ChatSession[]>;
+    getSession: (id: string) => Promise<ChatSession | null>;
+    deleteSession: (id: string) => Promise<void>;
+    addMessage: (
+      sessionId: string,
+      role: "user" | "assistant" | "system",
+      content: string,
+      sources?: string,
+    ) => Promise<ChatMessage>;
+    getMessages: (sessionId: string) => Promise<ChatMessage[]>;
+    send: (sessionId: string, message: string) => Promise<string>;
+  };
+  ollama: {
+    isRunning: () => Promise<boolean>;
+    models: () => Promise<string[]>;
+    classify: (
+      text: string,
+      imageCount: number,
+    ) => Promise<{
+      type: "photo" | "album" | "quote" | "tasks";
+      title?: string;
+      content?: string;
+      author?: string;
+    }>;
+    embed: (text: string) => Promise<number[]>;
+    chat: (
+      messages: Array<{ role: string; content: string }>,
+      model: string,
+    ) => Promise<string>;
+    onChatChunk: (callback: (chunk: string) => void) => void;
+  };
+  embeddings: {
+    embedAll: () => Promise<{ total: number; embedded: number; failed: number }>;
+    status: () => Promise<{ total: number; embedded: number }>;
+  };
+  data: {
+    export: () => Promise<string | null>;
+    clear: () => Promise<void>;
   };
 }
 

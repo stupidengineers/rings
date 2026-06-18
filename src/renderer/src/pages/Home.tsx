@@ -1,13 +1,14 @@
 import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowUpBigIcon, Cancel01Icon } from "@hugeicons/core-free-icons";
+import { ArrowUpBigIcon, Cancel01Icon, Tick01Icon } from "@hugeicons/core-free-icons";
 import { classifyNote, isOllamaRunning } from "../lib/ollama";
 
 export default function Home() {
   const [text, setText] = useState("");
   const [images, setImages] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handlePaste = useCallback((e: React.ClipboardEvent) => {
@@ -37,36 +38,42 @@ export default function Home() {
       let author: string | undefined;
       let cleanContent = text;
 
+      // Images force the type, but still use LLM to clean up text
+      if (images.length > 1) noteType = "album";
+      else if (images.length === 1) noteType = "photo";
+
       const running = await isOllamaRunning();
-      if (running) {
+      if (running && text.trim()) {
         const result = await classifyNote(text, images.length);
-        noteType = result.type;
+        // Only let LLM override type when there are no images
+        if (images.length === 0) {
+          noteType = result.type;
+        }
         title = result.title;
         author = result.author;
-        // Only use LLM content if it looks like actual user content, not echoed instructions
         const PROMPT_PHRASES = ["cleaned up", "remove instructions", "main body", "null if none", "otherwise null"];
         const isGarbage = result.content &&
           PROMPT_PHRASES.some((p) => result.content!.toLowerCase().includes(p));
         if (!isGarbage) {
-          // use LLM content (even if empty — empty is valid for photo/album with images)
-          cleanContent = result.content ?? (images.length > 0 ? "" : text);
+          let c = result.content ?? (images.length > 0 ? "" : text);
+          c = c.replace(/^["'"]+|["'"]+$/g, "").trim();
+          cleanContent = c;
         }
-      } else {
-        if (images.length > 1) noteType = "album";
-        else if (images.length === 1) noteType = "photo";
-        else if (text.trim().startsWith('"')) noteType = "quote";
+      } else if (images.length === 0) {
+        if (text.trim().startsWith('"')) noteType = "quote";
         else if (text.includes("\n- ") || text.includes("\n* ")) noteType = "tasks";
       }
 
-      const taskLines =
-        noteType === "tasks"
-          ? cleanContent
-              .split("\n")
-              .map((l) => l.replace(/^[-*]\s*/, "").trim())
-              .filter(Boolean)
-          : undefined;
+      let taskLines: string[] | undefined;
+      if (noteType === "tasks") {
+        let lines = cleanContent.split("\n").map((l) => l.replace(/^[-*\d.)\]]\s*/, "").trim()).filter(Boolean);
+        if (lines.length === 1) {
+          const bySep = lines[0].split(/,\s*(?:and\s+)?|(?:^|\s+)and\s+/).map((s) => s.trim()).filter(Boolean);
+          if (bySep.length >= 2) lines = bySep;
+        }
+        taskLines = lines;
+      }
 
-      // Save images to disk first (blob URLs die on restart)
       const savedImages: string[] = [];
       for (const blobUrl of images) {
         const res = await fetch(blobUrl);
@@ -85,13 +92,16 @@ export default function Home() {
         images: savedImages.length > 0 ? savedImages : undefined,
         tasks: taskLines,
       });
+
+      setText("");
+      setImages([]);
+      setSent(true);
+      setTimeout(() => setSent(false), 600);
     } catch (err) {
       console.error("Failed to save note:", err);
     }
 
     setLoading(false);
-    setText("");
-    setImages([]);
     textareaRef.current?.focus();
   };
 
@@ -103,18 +113,13 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-[calc(100vh-52px)] px-6 pt-24">
+    <div className="flex flex-col items-center min-h-[calc(100vh-52px)] px-6 pb-24 justify-center">
       <div className="w-full max-w-xl">
-        <h1 className="text-4xl md:text-5xl font-light tracking-tight mb-2">
-          What do you want to
-          <br />
-          <span className="italic">remember?</span>
+        <h1 className="text-4xl text-center mb-12 md:text-5xl font-light tracking-tight">
+          Note something down
         </h1>
-        <p className="text-stone-400 font-light mb-10">
-          Paste images, type a quote, jot down tasks. Markdown supported.
-        </p>
 
-        <div className="relative flex flex-col border-b-2 border-b-stone-200 focus-within:border-accent transition-colors">
+        <div className="relative flex flex-col border-b-2 border-b-border focus-within:border-accent transition-colors">
           <AnimatePresence>
             {images.length > 0 && (
               <motion.div
@@ -150,17 +155,17 @@ export default function Home() {
             onChange={(e) => setText(e.target.value)}
             onPaste={handlePaste}
             onKeyDown={handleKeyDown}
-            placeholder="Note something down..."
+            placeholder="I love sunsets"
             rows={1}
-            className="w-full text-2xl font-light bg-transparent resize-none placeholder:text-stone-300 focus:outline-none pb-3 pr-12"
+            className="w-full text-2xl font-light bg-transparent resize-none placeholder:text-foreground/30 focus:outline-none pb-3 pr-12"
           />
 
-          <div className="absolute bottom-2 right-0">
+          <div className="absolute bottom-2 right-0 z-10">
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={handleSend}
               disabled={loading}
-              className="size-9 rounded-full bg-accent text-white flex items-center justify-center cursor-pointer shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] hover:opacity-90 transition-opacity disabled:opacity-60"
+              className="size-9 rounded-full bg-accent text-white! flex items-center justify-center cursor-pointer shadow-[inset_0_2px_4px_rgba(255,255,255,0.6)] hover:opacity-90 transition-opacity disabled:opacity-60"
             >
               {loading ? (
                 <motion.div
@@ -168,6 +173,8 @@ export default function Home() {
                   transition={{ repeat: Infinity, duration: 0.8, ease: "linear" }}
                   className="size-4 border-2 border-white/30 border-t-white rounded-full"
                 />
+              ) : sent ? (
+                <HugeiconsIcon icon={Tick01Icon} size={16} />
               ) : (
                 <HugeiconsIcon icon={ArrowUpBigIcon} size={16} />
               )}

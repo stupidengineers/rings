@@ -39,13 +39,13 @@ function Item({
         ></motion.div>
       </div>{" "}
       <div
-        className={`text-lg w-fit whitespace-nowrap relative ${done ? "text-stone-600" : "text-black"} transition-colors duration-300`}
+        className={`text-lg w-fit whitespace-nowrap relative ${done ? "text-foreground/60" : "text-foreground"} transition-colors duration-300`}
       >
         <motion.div
           initial={{ width: done ? "100%" : "0%" }}
           animate={{ width: done ? "100%" : "0%" }}
           exit={{ width: "0%" }}
-          className="h-[2px] bg-stone-600 absolute top-1/2 -translate-y-1/2"
+          className="h-[2px] bg-foreground/60 absolute top-1/2 -translate-y-1/2"
         ></motion.div>
 
         {content}
@@ -75,7 +75,7 @@ export default function List({ title, initialItems, onDelete, onEdit, layoutId }
             done={item.done}
           />
         ))}
-        <button className="cursor-pointer w-full px-5 py-2 text-base hover:bg-stone-300 rounded-3xl flex text-stone-600 hover:text-stone-900 items-center justify-start gap-2 transition-colors duration-150">
+        <button className="cursor-pointer w-full px-5 py-2 text-base hover:bg-surface-hover rounded-full flex text-foreground/60 hover:text-foreground items-center justify-start gap-2 transition-colors duration-200">
           <HugeiconsIcon icon={AddCircleIcon} /> Add
         </button>
       </div>
